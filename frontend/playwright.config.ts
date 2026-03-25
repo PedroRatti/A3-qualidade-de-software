@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
     testDir: "./__tests__",
-    timeout: 30_000,
+    timeout: 30000,
     use: {
         baseURL: "http://127.0.0.1:4173",
         headless: true,
@@ -11,6 +11,6 @@ export default defineConfig({
         command: "npm run dev -- --host 127.0.0.1 --port 4173",
         url: "http://127.0.0.1:4173",
         reuseExistingServer: true,
-        timeout: 120_000,
+        timeout: 120000,
     },
 });
