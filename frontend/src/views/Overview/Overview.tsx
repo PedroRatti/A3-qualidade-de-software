@@ -1,4 +1,4 @@
-import "./OverviewView.css";
+import "./Overview.css";
 
 export function Overview() {
     return (
