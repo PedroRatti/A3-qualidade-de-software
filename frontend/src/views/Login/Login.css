@@ -1,0 +1,143 @@
+.login-view {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    overflow: hidden;
+    background:
+            radial-gradient(circle at top left, rgba(67, 116, 184, 0.18), transparent 32%),
+            radial-gradient(circle at bottom right, rgba(35, 76, 138, 0.38), transparent 26%),
+            linear-gradient(135deg, #06111f 0%, #0d2745 45%, #143763 100%);
+}
+
+.login-view__brand-panel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+}
+
+.login-view__brand-panel::before,
+.login-view__brand-panel::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(10px);
+}
+
+.login-view__brand-panel::before {
+    width: 260px;
+    height: 260px;
+    background: rgba(91, 150, 255, 0.18);
+    top: 6%;
+    left: 8%;
+}
+
+.login-view__brand-panel::after {
+    width: 320px;
+    height: 320px;
+    background: rgba(6, 27, 58, 0.6);
+    right: 8%;
+    bottom: 6%;
+}
+
+.login-view__brand-content {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 620px);
+}
+
+.login-view__logo-wrap {
+    margin: 28px 0 20px;
+}
+
+.login-view__brand-content h2 {
+    max-width: 12ch;
+    font-size: clamp(2.9rem, 5vw, 5.2rem);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    color: #f7fbff;
+}
+
+.login-view__description {
+    max-width: 540px;
+    margin-top: 22px;
+    font-size: 1.06rem;
+    line-height: 1.75;
+    color: #b2c3da;
+}
+
+.login-view__metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.login-view__metric-card {
+    padding: 18px;
+    border: 1px solid rgba(188, 209, 236, 0.12);
+    border-radius: 22px;
+    background: rgba(6, 17, 31, 0.28);
+    backdrop-filter: blur(14px);
+}
+
+.login-view__metric-card strong {
+    display: block;
+    font-size: 1.35rem;
+    color: #f7fbff;
+}
+
+.login-view__metric-card span {
+    display: block;
+    margin-top: 6px;
+    color: #97aecb;
+}
+
+.login-view__form-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    background:
+            linear-gradient(180deg, rgba(248, 251, 255, 0.97), rgba(232, 239, 247, 0.94)),
+            #eef4fb;
+}
+
+.login-view__form-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 980px) {
+    .login-view {
+        grid-template-columns: 1fr;
+    }
+
+    .login-view__brand-panel {
+        min-height: 42vh;
+        padding: 40px 24px 24px;
+    }
+
+    .login-view__brand-content h2 {
+        max-width: 13ch;
+        font-size: clamp(2.4rem, 8vw, 4rem);
+    }
+
+    .login-view__form-panel {
+        padding: 0 24px 40px;
+        margin-top: -26px;
+        background: transparent;
+    }
+}
+
+@media (max-width: 640px) {
+    .login-view__brand-panel {
+        padding: 28px 20px 20px;
+    }
+
+    .login-view__metrics {
+        grid-template-columns: 1fr;
+    }
+}
