@@ -7,7 +7,7 @@ test("deve fazer a request para o backend e exibir a mensagem na tela", async ({
             response.request().method() === "GET"
     );
 
-    await page.goto("/");
+    await page.goto("/service-health");
 
     const response = await responsePromise;
     const body = await response.json();
