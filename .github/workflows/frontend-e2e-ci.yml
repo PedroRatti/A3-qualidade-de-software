@@ -6,20 +6,40 @@ on:
     paths:
       - "frontend/**"
       - "backend/**"
-      - ".github/workflows/frontend-e2e.yml"
+      - ".github/workflows/frontend-e2e-ci.yml"
   pull_request:
     branches: [main, develop]
     paths:
       - "frontend/**"
       - "backend/**"
-      - ".github/workflows/frontend-e2e.yml"
+      - ".github/workflows/frontend-e2e-ci.yml"
 
 jobs:
   frontend-e2e:
     runs-on: ubuntu-latest
+    env:
+      DB_HOST: ${{ secrets.CI_DB_HOST }}
+      DB_PORT: ${{ secrets.CI_DB_PORT }}
+      DB_NAME: ${{ secrets.CI_DB_NAME }}
+      DB_USER: ${{ secrets.CI_DB_USER }}
+      DB_PASSWORD: ${{ secrets.CI_DB_PASSWORD }}
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: ${{ secrets.CI_DB_NAME }}
+          POSTGRES_USER: ${{ secrets.CI_DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.CI_DB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ${{ secrets.CI_DB_USER }} -d ${{ secrets.CI_DB_NAME }}"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
-      - name: Baixar código do repositório
+      - name: Baixar codigo do repositorio
         uses: actions/checkout@v4
 
       - name: Configurar Node.js
@@ -27,11 +47,11 @@ jobs:
         with:
           node-version: 22
 
-      - name: Instalar dependências do backend
+      - name: Instalar dependencias do backend
         working-directory: ./backend
         run: npm ci
 
-      - name: Instalar dependências do frontend
+      - name: Instalar dependencias do frontend
         working-directory: ./frontend
         run: npm ci
 
@@ -39,18 +59,34 @@ jobs:
         working-directory: ./frontend
         run: npx playwright install --with-deps
 
+      - name: Criar .env do backend
+        working-directory: ./backend
+        run: |
+          cat <<EOF > .env
+          DB_HOST=${DB_HOST}
+          DB_PORT=${DB_PORT}
+          DB_NAME=${DB_NAME}
+          DB_USER=${DB_USER}
+          DB_PASSWORD=${DB_PASSWORD}
+          EOF
+
       - name: Subir backend em background
         working-directory: ./backend
         run: |
           npm run dev &
           echo "Aguardando backend subir..."
-          sleep 10
+          for i in {1..20}; do
+            curl --fail http://127.0.0.1:3000/service-health && exit 0
+            sleep 3
+          done
+          echo "Backend nao ficou pronto a tempo."
+          exit 1
 
       - name: Rodar testes E2E do frontend
         working-directory: ./frontend
         run: npm run test:e2e
 
-      - name: Upload do relatório do Playwright
+      - name: Upload do relatorio do Playwright
         if: always()
         uses: actions/upload-artifact@v4
         with:
