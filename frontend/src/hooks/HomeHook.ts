@@ -12,7 +12,7 @@ export function homeHook() {
     useEffect(() => {
         const fetchHomeMessage = async () => {
             try {
-                const response = await fetch("http://localhost:3000/", {
+                const response = await fetch("http://localhost:3000/service-health", {
                     headers: {
                         "Content-Type": "application/json",
                     },
