@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test("deve fazer a request para o backend e exibir a mensagem na tela", async ({ page }) => {
     const responsePromise = page.waitForResponse(
         (response) =>
-            response.url() === "http://localhost:3000/" &&
+            response.url() === "http://localhost:3000/service-health" &&
             response.request().method() === "GET"
     );
 

@@ -4,7 +4,7 @@ import app from "../src/app";
 
 describe("GET /", () => {
     it("deve retornar status 200 e a mensagem do endpoint raiz", async () => {
-        const response = await request(app).get("/");
+        const response = await request(app).get("/service-health");
 
         expect(response.status).toBe(200);
         expect(response.body).toEqual({
