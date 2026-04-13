@@ -1,15 +1,15 @@
-INSERT INTO users (nome, cpf, number, birth, role, is_active)
-VALUES ('Pedro Admin', '12345678900', '48999990001', '1995-05-17', 'admin', TRUE),
-       ('Ana Souza', '12345678901', '48999990002', '1998-03-12', 'employee', TRUE),
-       ('Bruno Lima', '12345678902', '48999990003', '1997-07-25', 'employee', TRUE),
-       ('Carla Mendes', '12345678903', '48999990004', '1999-11-02', 'employee', TRUE),
-       ('Daniel Rocha', '12345678904', '48999990005', '1996-09-18', 'employee', TRUE),
-       ('Eduarda Alves', '12345678905', '48999990006', '2000-01-30', 'employee', TRUE),
-       ('Felipe Martins', '12345678906', '48999990007', '1994-06-14', 'employee', TRUE),
-       ('Gabriela Costa', '12345678907', '48999990008', '1998-12-09', 'employee', TRUE),
-       ('Henrique Dias', '12345678908', '48999990009', '1997-04-21', 'employee', TRUE),
-       ('Isabela Fernandes', '12345678909', '48999990010', '1999-08-05', 'employee', TRUE),
-       ('João Pedro', '12345678910', '48999990011', '1995-10-28', 'employee', TRUE);
+INSERT INTO users (nome, email, password, cpf, number, birth, role, is_active)
+VALUES ('Pedro Admin', 'pedro.admin@example.com', 'pedro123', '12345678900', '48999990001', '1995-05-17', 'admin', TRUE),
+       ('Ana Souza', 'ana.souza@example.com', 'ana123', '12345678901', '48999990002', '1998-03-12', 'employee', TRUE),
+       ('Bruno Lima', 'bruno.lima@example.com', 'bruno123', '12345678902', '48999990003', '1997-07-25', 'employee', TRUE),
+       ('Carla Mendes', 'carla.mendes@example.com', 'carla123', '12345678903', '48999990004', '1999-11-02', 'employee', TRUE),
+       ('Daniel Rocha', 'daniel.rocha@example.com', 'daniel123', '12345678904', '48999990005', '1996-09-18', 'employee', TRUE),
+       ('Eduarda Alves', 'eduarda.alves@example.com', 'eduarda123', '12345678905', '48999990006', '2000-01-30', 'employee', TRUE),
+       ('Felipe Martins', 'felipe.martins@example.com', 'felipe123', '12345678906', '48999990007', '1994-06-14', 'employee', TRUE),
+       ('Gabriela Costa', 'gabriela.costa@example.com', 'gabriela123', '12345678907', '48999990008', '1998-12-09', 'employee', TRUE),
+       ('Henrique Dias', 'henrique.dias@example.com', 'henrique123', '12345678908', '48999990009', '1997-04-21', 'employee', TRUE),
+       ('Isabela Fernandes', 'isabela.fernandes@example.com', 'isabela123', '12345678909', '48999990010', '1999-08-05', 'employee', TRUE),
+       ('Joao Pedro', 'joao.pedro@example.com', 'joao123', '12345678910', '48999990011', '1995-10-28', 'employee', TRUE);
 
 INSERT INTO time_entries (user_id, action)
 SELECT u.id,
