@@ -35,7 +35,7 @@ describe("GET /service-health", () => {
 
         const response = await request(app)
             .get("/service-health")
-            .set("Authorization", Bearer ${token});
+            .set("Authorization", `Bearer ${token}`);;
 
         expect(response.status).toBe(200);
         expect(response.body).toEqual({
