@@ -56,7 +56,7 @@ export function LoginForm() {
             <label className="login-form__field">
                 <span>Email</span>
                 <input
-                    className={emailError ? "login-form_input login-forminput--error" : "login-form_input"}
+                    className={emailError ? "login-form__input login-form__input--error" : "login-form__input"}
                     type="email"
                     name="email"
                     placeholder="Seu Email"
@@ -72,7 +72,7 @@ export function LoginForm() {
             <label className="login-form__field">
                 <span>Senha</span>
                 <input
-                    className={passwordError ? "login-form_input login-forminput--error" : "login-form_input"}
+                    className={passwordError ? "login-form__input login-form__input--error" : "login-form__input"}
                     type="password"
                     name="password"
                     placeholder="Digite sua senha"
