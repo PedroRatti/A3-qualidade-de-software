@@ -36,7 +36,7 @@ jobs:
       - name: Instalar browser do Playwright
         run: npx playwright install --with-deps chromium
 
-      - name: Rodar teste E2E de login
+      - name: Rodar teste de login
         run: npx playwright test __tests__/login.spec.test.ts
 
       - name: Upload do relatorio do Playwright
