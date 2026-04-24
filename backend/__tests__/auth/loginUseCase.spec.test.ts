@@ -37,7 +37,7 @@ describe("LoginUseCase", () => {
     it("deve retornar token e usuário quando as credenciais forem válidas", async () => {
         usersRepository.setUser({
             id: 1,
-            nome: "Pedro Admin",
+            name: "Pedro Admin",
             email: "pedro.admin@example.com",
             password: "pedro123",
             cpf: "12345678900",
@@ -56,8 +56,11 @@ describe("LoginUseCase", () => {
         expect(typeof result.token).toBe("string");
         expect(result.user).toEqual({
             id: 1,
-            nome: "Pedro Admin",
+            name: "Pedro Admin",
             email: "pedro.admin@example.com",
+            cpf: "12345678900",
+            number: "48999990001",
+            birth: "1995-05-17",
             role: "admin",
             is_active: true,
         });
@@ -93,7 +96,7 @@ describe("LoginUseCase", () => {
     it("deve falhar quando o usuário estiver inativo", async () => {
         usersRepository.setUser({
             id: 1,
-            nome: "Pedro Admin",
+            name: "Pedro Admin",
             email: "pedro.admin@example.com",
             password: "pedro123",
             cpf: "12345678900",
@@ -114,7 +117,7 @@ describe("LoginUseCase", () => {
     it("deve falhar quando a senha estiver incorreta", async () => {
         usersRepository.setUser({
             id: 1,
-            nome: "Pedro Admin",
+            name: "Pedro Admin",
             email: "pedro.admin@example.com",
             password: "pedro123",
             cpf: "12345678900",
@@ -137,7 +140,7 @@ describe("LoginUseCase", () => {
 
         usersRepository.setUser({
             id: 1,
-            nome: "Pedro Admin",
+            name: "Pedro Admin",
             email: "pedro.admin@example.com",
             password: "pedro123",
             cpf: "12345678900",

@@ -1,9 +1,10 @@
 import { Router } from "express";
 import authRoutes from "./auth";
+import { verifyJWT } from "../middleware/verifyJWT";
 
 const routes = Router();
 
-routes.get("/service-health", (req, res) => {
+routes.get("/service-health", verifyJWT, (req, res) => {
     res.json({ message: "Servidor de EquipeHub está rodando!" });
 });
 

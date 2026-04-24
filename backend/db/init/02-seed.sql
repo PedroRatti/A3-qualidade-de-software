@@ -1,4 +1,4 @@
-INSERT INTO users (nome, email, password, cpf, number, birth, role, is_active)
+INSERT INTO users (name, email, password, cpf, number, birth, role, is_active)
 VALUES ('Pedro Admin', 'pedro.admin@example.com', 'pedro123', '12345678900', '48999990001', '1995-05-17', 'admin', TRUE),
        ('Ana Souza', 'ana.souza@example.com', 'ana123', '12345678901', '48999990002', '1998-03-12', 'employee', TRUE),
        ('Bruno Lima', 'bruno.lima@example.com', 'bruno123', '12345678902', '48999990003', '1997-07-25', 'employee', TRUE),
