@@ -58,6 +58,9 @@ describe("LoginUseCase", () => {
             id: 1,
             name: "Pedro Admin",
             email: "pedro.admin@example.com",
+            cpf: "12345678900",
+            number: "48999990001",
+            birth: "1995-05-17",
             role: "admin",
             is_active: true,
         });
