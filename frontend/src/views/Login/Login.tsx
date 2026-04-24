@@ -1,44 +1,50 @@
+import { Navigate } from "react-router-dom";
 import { LoginForm } from "../../components/LoginForm/LoginForm.tsx";
 import { ProjectLogo } from "../../components/ProjectLogo/ProjectLogo.tsx";
 import "./Login.css";
 
 const metrics = [
-    { value: "24/7", label: "Monitoramento" },
-    { value: "100%", label: "Visibilidade" },
+{ value: "24/7", label: "Monitoramento" },
+{ value: "100%", label: "Visibilidade" },
 ];
 
 export function Login() {
-    return (
-        <main className="login-view">
-            <section className="login-view__brand-panel">
-                <div className="login-view__brand-content">
+const token = localStorage.getItem("token");
+if (token) {
+return <Navigate to="/overview" replace />;
+}
 
-                    <div className="login-view__logo-wrap">
-                        <ProjectLogo />
-                    </div>
+return (
+<main className="login-view">
+<section className="login-view__brand-panel">
+<div className="login-view__brand-content">
 
-                    <h2>Ambiente central para governança, rastreabilidade e colaboração.</h2>
+<div className="login-view__logo-wrap">
+<ProjectLogo />
+</div>
 
-                    <p className="login-view__description">
-                        Uma entrada clara para o time iniciar o dia com contexto e foco.
-                    </p>
+<h2>Ambiente central para governança, rastreabilidade e colaboração.</h2>
 
-                    <div className="login-view__metrics">
-                        {metrics.map((metric) => (
-                            <article key={metric.value} className="login-view__metric-card">
-                                <strong>{metric.value}</strong>
-                                <span>{metric.label}</span>
-                            </article>
-                        ))}
-                    </div>
-                </div>
-            </section>
+<p className="login-view__description">
+Uma entrada clara para o time iniciar o dia com contexto e foco.
+</p>
 
-            <section className="login-view__form-panel">
-                <div className="login-view__form-wrapper">
-                    <LoginForm />
-                </div>
-            </section>
-        </main>
-    );
+<div className="login-view__metrics">
+{metrics.map((metric) => (
+<article key={metric.value} className="login-view__metric-card">
+<strong>{metric.value}</strong>
+<span>{metric.label}</span>
+</article>
+))}
+</div>
+</div>
+</section>
+
+<section className="login-view__form-panel">
+<div className="login-view__form-wrapper">
+<LoginForm />
+</div>
+</section>
+</main>
+);
 }

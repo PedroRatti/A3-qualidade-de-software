@@ -1,4 +1,33 @@
 .overview-view {
-    min-height: 100vh;
-    background: #f4f7fb;
+min-height: 100vh;
+padding: 32px;
+background: #f4f7fb;
+}
+
+.overview-view__header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 16px;
+}
+
+.overview-view__header h1 {
+margin: 0;
+color: #12233b;
+}
+
+.overview-view__logout {
+border: none;
+border-radius: 12px;
+padding: 12px 18px;
+background: #12345d;
+color: #fff;
+font: inherit;
+font-weight: 600;
+cursor: pointer;
+transition: filter 0.2s ease;
+}
+
+.overview-view__logout:hover {
+filter: brightness(1.08);
 }
