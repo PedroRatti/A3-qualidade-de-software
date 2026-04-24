@@ -5,7 +5,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 export function LoginForm() {
     const navigate = useNavigate();
-    const { login, loading } = useAuth();
+    const { login, loading, error } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -88,6 +88,7 @@ export function LoginForm() {
             <button type="submit" className="login-form__submit" disabled={loading}>
                 {loading ? "Entrando..." : "Entrar"}
             </button>
+            {error && <p className="login-form__error">{error}</p>}
         </form>
     );
 }
