@@ -1,5 +1,5 @@
 import { FaArrowRightFromBracket, FaClock, FaFileLines } from "react-icons/fa6";
-import "./AppSidebar.css";
+import "./Navbar.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
