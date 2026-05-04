@@ -30,7 +30,7 @@ export function AppSidebar() {
                     onClick={() => navigate("/requests")}
                 >
                     <FaFileLines size={18} color="#ffffff" />
-                    <span className="app-sidebar__label">Solicitacoes</span>
+                    <span className="app-sidebar__label">Solicitações</span>
                 </button>
 
                 <button
