@@ -11,24 +11,23 @@ VALUES ('Pedro Admin', 'pedro.admin@example.com', 'pedro123', '12345678900', '48
        ('Isabela Fernandes', 'isabela.fernandes@example.com', 'isabela123', '12345678909', '48999990010', '1999-08-05', 'employee', TRUE),
        ('Joao Pedro', 'joao.pedro@example.com', 'joao123', '12345678910', '48999990011', '1995-10-28', 'employee', TRUE);
 
-INSERT INTO time_entries (user_id, action)
+INSERT INTO time_entries (user_id, action, created_at)
 SELECT u.id,
-       (d::timestamp + TIME '08:00:00')
+       e.action,
+       d.day::timestamp + e.base_time + ((u.id + EXTRACT(DAY FROM d.day)::int) % 11) * INTERVAL '1 minute'
 FROM users u
          CROSS JOIN generate_series(
                 CURRENT_DATE - INTERVAL '1 month',
                 CURRENT_DATE,
                 INTERVAL '1 day'
-                    ) d
-WHERE EXTRACT(ISODOW FROM d) BETWEEN 1 AND 5;
-
-INSERT INTO time_entries (user_id, action)
-SELECT u.id,
-       (d::timestamp + TIME '17:00:00')
-FROM users u
-         CROSS JOIN generate_series(
-                CURRENT_DATE - INTERVAL '1 month',
-                CURRENT_DATE,
-                INTERVAL '1 day'
-                    ) d
-WHERE EXTRACT(ISODOW FROM d) BETWEEN 1 AND 5;
+                    ) AS d(day)
+         CROSS JOIN (
+                VALUES
+                    ('Entrada', TIME '08:00:00'),
+                    ('Saída Almoço', TIME '12:00:00'),
+                    ('Entrada Almoço', TIME '13:00:00'),
+                    ('Saída', TIME '17:00:00')
+                    ) AS e(action, base_time)
+WHERE u.role = 'employee'
+  AND u.is_active = TRUE
+  AND EXTRACT(ISODOW FROM d.day) BETWEEN 1 AND 5;

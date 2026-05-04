@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS time_entries
 (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
-    action TIMESTAMP NOT NULL, 
+    action VARCHAR (255) NOT NULL,
+    created_at TIMESTAMP NOT NULL, 
     CONSTRAINT fk_time_entries_user FOREIGN KEY (user_id)
     REFERENCES users (id) ON DELETE CASCADE
     );
