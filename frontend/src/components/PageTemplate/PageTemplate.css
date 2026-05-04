@@ -1,0 +1,23 @@
+.page-template {
+    min-height: 100vh;
+    background: var(--app-surface);
+}
+
+.page-template__content {
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding-top: calc(var(--app-header-height) + 24px);
+    padding-right: 32px;
+    padding-bottom: 32px;
+    padding-left: calc(var(--app-sidebar-width) + 24px);
+    background: var(--app-surface);
+}
+
+@media (max-width: 768px) {
+    .page-template__content {
+        padding-top: calc(var(--app-header-height) + 20px);
+        padding-right: 16px;
+        padding-bottom: 24px;
+        padding-left: calc(var(--app-sidebar-width) + 16px);
+    }
+}
