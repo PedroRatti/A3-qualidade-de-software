@@ -1,0 +1,70 @@
+.app-sidebar {
+    position: fixed;
+    top: var(--app-header-height);
+    left: 0;
+    z-index: 20;
+
+    width: var(--app-sidebar-width);
+    height: calc(100vh - var(--app-header-height));
+    box-sizing: border-box;
+    padding: 16px 12px;
+
+    background: var(--app-primary);
+    overflow: hidden;
+    transition: width 0.25s ease, box-shadow 0.25s ease;
+}
+
+.app-sidebar:hover {
+    width: var(--app-sidebar-width-expanded);
+    box-shadow: 16px 0 32px rgba(6, 17, 31, 0.12);
+}
+
+.app-sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+}
+
+.app-sidebar__item {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 14px;
+
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s ease;
+}
+
+.app-sidebar__item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.app-sidebar__item svg {
+    display: block;
+    flex-shrink: 0;
+    min-width: 18px;
+}
+
+.app-sidebar__label {
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.app-sidebar:hover .app-sidebar__label {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.app-sidebar__item--logout {
+    margin-top: auto;
+}
