@@ -1,5 +1,5 @@
 import { FaBell, FaUser } from "react-icons/fa6";
-import "./AppHeader.css";
+import "./Header.css";
 
 type AppHeaderProps = {
     title: string;
