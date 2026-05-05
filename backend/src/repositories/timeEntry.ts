@@ -1,6 +1,6 @@
 import { getPool } from "../database/connection";
 import { TimeEntryAction, TimeEntryRecord } from "../useCases/ponto/contracts/ponto.types";
-import { normalizeTimeEntryAction } from "../utils/ponto/ponto.Actions";
+import { normalizeTimeEntryAction } from "../utils/ponto/ponto.actions";
 
 type TimeEntryRow = {
     id: number;

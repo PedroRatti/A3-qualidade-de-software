@@ -1,5 +1,5 @@
 import { PointSummary, TimeEntryRecord } from "../../useCases/ponto/contracts/ponto.types";
-import { getAvailableActions, getPointStatus } from "./ponto.Actions";
+import { getAvailableActions, getPointStatus } from "./ponto.actions";
 import { calculateWorkedMinutes, formatDay, formatDuration, formatTime, mapActionLabel } from "./ponto.formatter";
 
 export function buildPointSummary(input: {

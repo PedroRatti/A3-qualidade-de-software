@@ -1,6 +1,6 @@
 import { UsersRepository } from "../../repositories/user";
 import { TimeEntriesRepository } from "../../repositories/timeEntry";
-import { getAvailableActions, mapPointActionKeyToTimeEntryAction } from "../../utils/ponto/ponto.Actions";
+import { getAvailableActions, mapPointActionKeyToTimeEntryAction } from "../../utils/ponto/ponto.actions";
 import { PointActionKey } from "./contracts/ponto.types";
 import { buildPointSummary } from "../../utils/ponto/ponto.summary";
 
