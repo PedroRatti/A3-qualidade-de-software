@@ -23,10 +23,10 @@ FROM users u
                     ) AS d(day)
          CROSS JOIN (
                 VALUES
-                    ('Entrada', TIME '08:00:00'),
-                    ('Saída Almoço', TIME '12:00:00'),
-                    ('Entrada Almoço', TIME '13:00:00'),
-                    ('Saída', TIME '17:00:00')
+                    ('entrada', TIME '08:00:00'),
+                    ('saida_almoco', TIME '12:00:00'),
+                    ('entrada_almoco', TIME '13:00:00'),
+                    ('saida', TIME '17:00:00')
                     ) AS e(action, base_time)
 WHERE u.role = 'employee'
   AND u.is_active = TRUE
