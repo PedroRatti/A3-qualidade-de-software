@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Login } from "./views/Login/Login.tsx";
-import { Overview } from "./views/Overview/Overview.tsx";
 import { ProtectedRoute } from "./utils/ProtectedRoute.tsx";
+import { Ponto } from "./views/Ponto/Ponto.tsx";
 
 function App() {
     return (
@@ -12,7 +12,7 @@ function App() {
                     path="/overview"
                     element={
                         <ProtectedRoute>
-                            <Overview />
+                            <Ponto />
                         </ProtectedRoute>
                     }
                 />
