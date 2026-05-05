@@ -25,7 +25,7 @@ describe("LoginUseCase", () => {
 
     beforeEach(() => {
         usersRepository = new FakeUsersRepository();
-        loginUseCase = new LoginUseCase(usersRepository as UsersRepository);
+        loginUseCase = new LoginUseCase(usersRepository);
         process.env.AUTH_JWT_SECRET = "test-secret";
     });
 
