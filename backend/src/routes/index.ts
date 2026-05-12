@@ -1,13 +1,11 @@
 import { Router } from "express";
+
 import authRoutes from "./auth";
-import { verifyJWT } from "../middleware/verifyJWT";
+import pontoRoutes from "./ponto";
 
 const routes = Router();
 
-routes.get("/service-health", verifyJWT, (req, res) => {
-    res.json({ message: "Servidor de EquipeHub está rodando!" });
-});
-
 routes.use("/auth", authRoutes);
+routes.use("/ponto", pontoRoutes);
 
 export default routes;

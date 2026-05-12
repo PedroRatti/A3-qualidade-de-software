@@ -1,0 +1,109 @@
+:root {
+    --app-header-height: 58px;
+    --app-sidebar-width: 84px;
+    --app-sidebar-width-expanded: 240px;
+    --app-primary: #12345d;
+    --app-surface: #f4f7fb;
+}
+
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 30;
+
+    width: 100%;
+    height: var(--app-header-height);
+    box-sizing: border-box;
+    padding: 0 20px;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+
+    background: var(--app-primary);
+    box-shadow: 0 10px 30px rgba(6, 17, 31, 0.16);
+}
+
+.app-header__brand {
+    min-width: 0;
+}
+
+.app-header__project-name {
+    display: inline-block;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.app-header__title-wrap {
+    min-width: 0;
+    justify-self: center;
+}
+
+.app-header__title {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.app-header__actions {
+    display: flex;
+    align-items: center;
+    justify-self: end;
+    gap: 10px;
+}
+
+.app-header__icon-button {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border: none;
+    outline: none;
+    border-radius: 999px;
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.app-header__icon-button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+}
+
+.app-header__icon-button:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.34);
+}
+
+.app-header__icon-button svg {
+    display: block;
+    flex-shrink: 0;
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .app-header {
+        padding: 0 14px;
+        grid-template-columns: 1fr auto;
+    }
+
+    .app-header__title-wrap {
+        grid-column: 1 / -1;
+        justify-self: start;
+        display: none;
+    }
+}
