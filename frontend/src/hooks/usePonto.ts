@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { PointActionKey, PointSummary } from "../types/ponto.types";
+import type { PointActionKey, PointHistoryDay, PointSummary } from "../types/ponto.types";
 import { apiRequest } from "./apiClient";
 
 type RegisterPointResponse = {
@@ -24,6 +24,8 @@ export function usePonto() {
     const [loading, setLoading] = useState(true);
     const [submittingAction, setSubmittingAction] = useState<PointActionKey | null>(null);
     const [error, setError] = useState("");
+    const [history, setHistory] = useState<PointHistoryDay[]>([]);
+    const [historyLoading, setHistoryLoading] = useState(false);
 
     const refreshSummary = async () => {
         try {
@@ -64,6 +66,24 @@ export function usePonto() {
         }
     };
 
+    const loadHistory = async () => {
+        try {
+            setHistoryLoading(true);
+            setError("");
+
+            const nextHistory = await apiRequest<PointHistoryDay[]>("/ponto/history", {
+                method: "GET",
+                auth: true,
+            });
+
+            setHistory(nextHistory);
+        } catch (requestError) {
+            setError(toErrorMessage(requestError, "Erro ao carregar o histórico de ponto."));
+        } finally {
+            setHistoryLoading(false);
+        }
+    };
+
     useEffect(() => {
         void refreshSummary();
     }, []);
@@ -75,5 +95,8 @@ export function usePonto() {
         error,
         refreshSummary,
         registerAction,
+        history,
+        historyLoading,
+        loadHistory,
     };
 }

@@ -36,6 +36,34 @@
     cursor: pointer;
 }
 
+.ponto-tabs {
+    display: inline-flex;
+    gap: 8px;
+    padding: 6px;
+    border-radius: 18px;
+    background: #e8eff7;
+    width: fit-content;
+}
+
+.ponto-tabs__button {
+    min-height: 42px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: #12345d;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ponto-tabs__button--active {
+    background: #ffffff;
+    color: #12233b;
+    box-shadow: 0 10px 24px rgba(18, 52, 93, 0.08);
+}
+
 .ponto-view__hero {
     display: flex;
     align-items: flex-start;
@@ -222,6 +250,38 @@
     box-shadow: none;
 }
 
+.ponto-history {
+    display: grid;
+    gap: 18px;
+}
+
+.ponto-history__day {
+    display: grid;
+    gap: 14px;
+}
+
+.ponto-history__day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.ponto-history__day-header strong {
+    color: #12233b;
+    font-size: 1rem;
+}
+
+.ponto-history__day-header span {
+    color: #12345d;
+    font-weight: 800;
+}
+
+.ponto-history__empty {
+    margin: 0;
+    color: #617287;
+}
+
 .ponto-records {
     display: grid;
     gap: 12px;
@@ -274,7 +334,6 @@
 }
 
 @media (max-width: 1100px) {
-
     .ponto-view__grid,
     .ponto-actions {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -292,6 +351,14 @@
         flex-direction: column;
     }
 
+    .ponto-tabs {
+        width: 100%;
+    }
+
+    .ponto-tabs__button {
+        flex: 1;
+    }
+
     .ponto-view__hero-meta {
         justify-items: start;
         text-align: left;
@@ -307,7 +374,8 @@
         padding: 20px;
     }
 
-    .ponto-record {
+    .ponto-record,
+    .ponto-history__day-header {
         align-items: flex-start;
         flex-direction: column;
     }

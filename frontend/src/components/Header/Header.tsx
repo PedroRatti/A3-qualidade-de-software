@@ -8,19 +8,19 @@ type AppHeaderProps = {
 export function AppHeader({ title }: AppHeaderProps) {
     return (
         <header className="app-header">
-            <div className="app-header__brand">
-                <span className="app-header__project-name">EquipeHub</span>
+            <div className="app-headerbrand">
+                <span className="app-headerproject-name">EquipeHub</span>
             </div>
 
-            <div className="app-header__title-wrap">
-                <h1 className="app-header__title">{title}</h1>
+            <div className="app-headertitle-wrap">
+                <h1 className="app-headertitle">{title}</h1>
             </div>
 
-            <div className="app-header__actions">
+            <div className="app-headeractions">
                 <button
                     type="button"
-                    className="app-header__icon-button"
-                    aria-label="Notificacoes"
+                    className="app-headericon-button"
+                    aria-label="Notificações"
                 >
                     <FaBell size={18} color="#ffffff" />
                 </button>

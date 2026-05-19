@@ -35,3 +35,10 @@ export type PointActionDefinition = {
     label: string;
     tone: "primary" | "neutral";
 };
+
+export type PointHistoryDay = {
+    date: string;
+    dayLabel: string;
+    workedTime: string;
+    records: PointRecord[];
+};
