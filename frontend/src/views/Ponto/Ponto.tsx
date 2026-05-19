@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { PageTemplate } from "../../components/PageTemplate/PageTemplate.tsx";
 import { usePonto } from "../../hooks/usePonto.ts";
 import type { PointActionKey } from "../../types/ponto.types.ts";
@@ -7,9 +8,22 @@ import { PontoHero } from "./Hero/PontoHero.tsx";
 import "./Ponto.css";
 import { Records } from "./Records/Records.tsx";
 import { PontoSummaryCards } from "./Summary/PontoSummary.tsx";
+import { PointHistory } from "./History/PointHistory.tsx";
 
 export function Ponto() {
-    const { summary, loading, submittingAction, error, refreshSummary, registerAction } = usePonto();
+    const [activeTab, setActiveTab] = useState<"registro" | "historico">("registro");
+    const {
+        summary,
+        loading,
+        submittingAction,
+        error,
+        refreshSummary,
+        registerAction,
+        history,
+        historyLoading,
+        loadHistory,
+    } = usePonto();
+
     const pointData = summary ?? createPointPreview();
 
     const handleActionClick = async (action: PointActionKey) => {
@@ -17,6 +31,14 @@ export function Ponto() {
             await registerAction(action);
         } catch {
             return;
+        }
+    };
+
+    const handleTabChange = async (tab: "registro" | "historico") => {
+        setActiveTab(tab);
+
+        if (tab === "historico" && history.length === 0) {
+            await loadHistory();
         }
     };
 
@@ -45,16 +67,40 @@ export function Ponto() {
                     </section>
                 ) : null}
 
-                <PontoSummaryCards summary={pointData} />
+                <section className="ponto-tabs">
+                    <button
+                        type="button"
+                        className={activeTab === "registro" ? "ponto-tabs__button ponto-tabs__button--active" : "ponto-tabs__button"}
+                        onClick={() => void handleTabChange("registro")}
+                    >
+                        Bater ponto
+                    </button>
 
-                <Actions
-                    availableActions={pointData.availableActions}
-                    loading={loading}
-                    submittingAction={submittingAction}
-                    onActionClick={handleActionClick}
-                />
+                    <button
+                        type="button"
+                        className={activeTab === "historico" ? "ponto-tabs__button ponto-tabs__button--active" : "ponto-tabs__button"}
+                        onClick={() => void handleTabChange("historico")}
+                    >
+                        HistÃ³rico
+                    </button>
+                </section>
 
-                <Records records={pointData.records} />
+                {activeTab === "registro" ? (
+                    <>
+                        <PontoSummaryCards summary={pointData} />
+
+                        <Actions
+                            availableActions={pointData.availableActions}
+                            loading={loading}
+                            submittingAction={submittingAction}
+                            onActionClick={handleActionClick}
+                        />
+
+                        <Records records={pointData.records} />
+                    </>
+                ) : (
+                    <PointHistory history={history} loading={historyLoading} />
+                )}
             </section>
         </PageTemplate>
     );

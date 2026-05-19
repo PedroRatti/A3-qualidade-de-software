@@ -10,10 +10,18 @@ type ApiErrorResponse = {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
+function isFormDataBody(body: unknown): body is FormData {
+    return body instanceof FormData;
+}
+
 function buildHeaders(options: ApiRequestOptions): HeadersInit {
     const headers = new Headers(options.headers);
 
-    if (options.body !== undefined && !headers.has("Content-Type")) {
+    if (
+        options.body !== undefined &&
+        !isFormDataBody(options.body) &&
+        !headers.has("Content-Type")
+    ) {
         headers.set("Content-Type", "application/json");
     }
 
@@ -34,7 +42,12 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
     const response = await fetch(`${API_BASE_URL}${path}`, {
         ...options,
         headers: buildHeaders(options),
-        body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+        body:
+            options.body === undefined
+                ? undefined
+                : isFormDataBody(options.body)
+                    ? options.body
+                    : JSON.stringify(options.body),
     });
 
     const contentType = response.headers.get("content-type") ?? "";

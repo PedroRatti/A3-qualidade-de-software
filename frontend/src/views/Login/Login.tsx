@@ -4,47 +4,47 @@ import { ProjectLogo } from "../../components/ProjectLogo/ProjectLogo.tsx";
 import "./Login.css";
 
 const metrics = [
-{ value: "24/7", label: "Monitoramento" },
-{ value: "100%", label: "Visibilidade" },
+    { value: "24/7", label: "Monitoramento" },
+    { value: "100%", label: "Visibilidade" },
 ];
 
 export function Login() {
-const token = localStorage.getItem("token");
-if (token) {
-return <Navigate to="/overview" replace />;
-}
+    const token = localStorage.getItem("token");
+    if (token) {
+        return <Navigate to="/overview" replace />;
+    }
 
-return (
-<main className="login-view">
-<section className="login-view__brand-panel">
-<div className="login-view__brand-content">
+    return (
+        <main className="login-view">
+            <section className="login-viewbrand-panel">
+                <div className="login-viewbrand-content">
 
-<div className="login-view__logo-wrap">
-<ProjectLogo />
-</div>
+                    <div className="login-viewlogo-wrap">
+                        <ProjectLogo />
+                    </div>
 
-<h2>Ambiente central para governança, rastreabilidade e colaboração.</h2>
+                    <h2>Ambiente central para governança, rastreabilidade e colaboração.</h2>
 
-<p className="login-view__description">
-Uma entrada clara para o time iniciar o dia com contexto e foco.
-</p>
+                    <p className="login-viewdescription">
+                        Uma entrada clara para o time iniciar o dia com contexto e foco.
+                    </p>
 
-<div className="login-view__metrics">
-{metrics.map((metric) => (
-<article key={metric.value} className="login-view__metric-card">
-<strong>{metric.value}</strong>
-<span>{metric.label}</span>
-</article>
-))}
-</div>
-</div>
-</section>
+                    <div className="login-viewmetrics">
+                        {metrics.map((metric) => (
+                            <article key={metric.value} className="login-viewmetric-card">
+                                <strong>{metric.value}</strong>
+                                <span>{metric.label}</span>
+                            </article>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
-<section className="login-view__form-panel">
-<div className="login-view__form-wrapper">
-<LoginForm />
-</div>
-</section>
-</main>
-);
+            <section className="login-viewform-panel">
+                <div className="login-viewform-wrapper">
+                    <LoginForm />
+                </div>
+            </section>
+        </main>
+    );
 }
