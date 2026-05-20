@@ -81,7 +81,7 @@ export function Ponto() {
                         className={activeTab === "historico" ? "ponto-tabs__button ponto-tabs__button--active" : "ponto-tabs__button"}
                         onClick={() => void handleTabChange("historico")}
                     >
-                        HistÃ³rico
+                        Histórico
                     </button>
                 </section>
 

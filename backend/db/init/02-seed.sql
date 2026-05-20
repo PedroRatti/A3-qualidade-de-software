@@ -18,7 +18,7 @@ SELECT u.id,
 FROM users u
          CROSS JOIN generate_series(
                 CURRENT_DATE - INTERVAL '1 month',
-                CURRENT_DATE,
+                CURRENT_DATE - INTERVAL '1 day',
                 INTERVAL '1 day'
                     ) AS d(day)
          CROSS JOIN (

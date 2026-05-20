@@ -12,8 +12,8 @@ export function RequestsTabs({ activeTab, onChange }: RequestsTabsProps) {
                 type="button"
                 className={
                     activeTab === "nova"
-                        ? "requests-tabsbutton requests-tabsbutton--active"
-                        : "requests-tabsbutton"
+                        ? "requests-tabs__button requests-tabs__button--active"
+                        : "requests-tabs__button"
                 }
                 onClick={() => void onChange("nova")}
             >
@@ -24,8 +24,8 @@ export function RequestsTabs({ activeTab, onChange }: RequestsTabsProps) {
                 type="button"
                 className={
                     activeTab === "historico"
-                        ? "requests-tabsbutton requests-tabsbutton--active"
-                        : "requests-tabsbutton"
+                        ? "requests-tabs__button requests-tabs__button--active"
+                        : "requests-tabs__button"
                 }
                 onClick={() => void onChange("historico")}
             >
