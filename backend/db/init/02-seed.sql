@@ -18,7 +18,7 @@ SELECT u.id,
 FROM users u
          CROSS JOIN generate_series(
                 CURRENT_DATE - INTERVAL '1 month',
-                CURRENT_DATE,
+                CURRENT_DATE - INTERVAL '1 day',
                 INTERVAL '1 day'
                     ) AS d(day)
          CROSS JOIN (
@@ -28,6 +28,10 @@ FROM users u
                     ('entrada_almoco', TIME '13:00:00'),
                     ('saida', TIME '17:00:00')
                     ) AS e(action, base_time)
-WHERE u.role = 'employee'
-  AND u.is_active = TRUE
+WHERE u.is_active = TRUE
   AND EXTRACT(ISODOW FROM d.day) BETWEEN 1 AND 5;
+
+INSERT INTO requests (user_id, type, start_date, end_date, reason, attachment_url, status)
+VALUES
+    (2, 1, 'ferias', '2026-06-10', '2026-06-20', 'Ferias programadas', NULL, 'pendente'),
+    (2, 1, 'abono_falta', '2026-05-06', '2026-05-06', 'Consulta medica', 'https://meu-arquivo.com/atestado.pdf', 'aprovada');

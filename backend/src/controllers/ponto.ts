@@ -12,9 +12,10 @@ import { TimeEntriesRepository } from "../repositories/timeEntry";
 import { UsersRepository } from "../repositories/user";
 import { GetTodayPointSummaryUseCase } from "../useCases/ponto/getTodayPointSummary";
 import { RegisterTimeEntryUseCase } from "../useCases/ponto/registerTimeEntry";
+import { GetPointHistoryUseCase } from "../useCases/ponto/getPointHistory";
 
 export class PontoController {
-    
+
     async getToday(req: Request, res: Response) {
         try {
             const userId = Number(req.user?.id);
@@ -66,6 +67,31 @@ export class PontoController {
             });
         } catch (error) {
             return handlePontoError(error, res, "Erro interno ao registrar a batida de ponto.");
+        }
+    }
+
+    async getHistory(req: Request, res: Response) {
+        try {
+            const userId = Number(req.user?.id);
+
+            if (!Number.isInteger(userId)) {
+                return res.status(401).json({
+                    message: "Contexto de usuário inválido.",
+                });
+            }
+
+            const usersRepository = new UsersRepository();
+            const timeEntriesRepository = new TimeEntriesRepository();
+            const getPointHistoryUseCase = new GetPointHistoryUseCase(
+                usersRepository,
+                timeEntriesRepository
+            );
+
+            const history = await getPointHistoryUseCase.execute({ userId });
+
+            return res.status(200).json(history);
+        } catch (error) {
+            return handlePontoError(error, res, "Erro interno ao buscar o histórico de ponto.");
         }
     }
 }

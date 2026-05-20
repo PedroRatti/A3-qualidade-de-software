@@ -20,7 +20,7 @@ export function AppHeader({ title }: AppHeaderProps) {
                 <button
                     type="button"
                     className="app-header__icon-button"
-                    aria-label="Notificacoes"
+                    aria-label="Notificações"
                 >
                     <FaBell size={18} color="#ffffff" />
                 </button>

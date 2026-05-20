@@ -12,6 +12,12 @@ export type User = {
     is_active: boolean;
 };
 
+export type SupervisorOption = {
+    id: number;
+    name: string;
+    email: string;
+};
+
 export class UsersRepository {
     async findByEmail(email: string): Promise<User | null> {
         const pool = getPool();
@@ -51,5 +57,21 @@ export class UsersRepository {
         }
 
         return result.rows[0];
+    }
+
+    async findActiveAdmins(): Promise<SupervisorOption[]> {
+        const pool = getPool();
+
+        const result = await pool.query<SupervisorOption>(
+            `
+        SELECT id, name, email
+        FROM users
+        WHERE role = 'admin'
+          AND is_active = TRUE
+        ORDER BY name ASC
+        `
+        );
+
+        return result.rows;
     }
 }

@@ -19,11 +19,11 @@ export class TimeEntriesRepository {
 
         const result = await pool.query<TimeEntryRow>(
             `
-            SELECT id, user_id, action, created_at
-            FROM time_entries
-            WHERE user_id = $1
-              AND DATE(created_at) = CURRENT_DATE
-            ORDER BY created_at ASC, id ASC
+                SELECT id, user_id, action, created_at
+                FROM time_entries
+                WHERE user_id = $1
+                AND DATE(created_at) = CURRENT_DATE
+                ORDER BY created_at ASC, id ASC
             `,
             [userId]
         );
@@ -41,9 +41,9 @@ export class TimeEntriesRepository {
 
         const result = await pool.query<TimeEntryRow>(
             `
-            INSERT INTO time_entries (user_id, action, created_at)
-            VALUES ($1, $2, NOW())
-            RETURNING id, user_id, action, created_at
+                INSERT INTO time_entries (user_id, action, created_at)
+                VALUES ($1, $2, NOW())
+                RETURNING id, user_id, action, created_at
             `,
             [input.userId, toStoredTimeEntryAction(input.action)]
         );
@@ -56,5 +56,27 @@ export class TimeEntriesRepository {
             action: normalizeTimeEntryAction(row.action),
             created_at: new Date(row.created_at),
         };
+    }
+
+    async findHistoryByUserId(userId: number, daysBack = 30): Promise<TimeEntryRecord[]> {
+        const pool = getPool();
+
+        const result = await pool.query<TimeEntryRow>(
+            `
+            SELECT id, user_id, action, created_at
+            FROM time_entries
+            WHERE user_id = $1
+            AND created_at >= CURRENT_DATE - ($2 * INTERVAL '1 day')
+            ORDER BY created_at DESC, id DESC
+        `,
+            [userId, daysBack]
+        );
+
+        return result.rows.map((row) => ({
+            id: row.id,
+            user_id: row.user_id,
+            action: normalizeTimeEntryAction(row.action),
+            created_at: new Date(row.created_at),
+        }));
     }
 }
