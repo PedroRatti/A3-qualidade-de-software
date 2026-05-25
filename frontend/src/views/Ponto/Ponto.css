@@ -282,6 +282,121 @@
     color: #617287;
 }
 
+.ponto-team-history {
+    display: grid;
+    gap: 18px;
+}
+
+.ponto-team-history__employee {
+    border-radius: 20px;
+    background: #f8fbff;
+    border: 1px solid rgba(18, 52, 93, 0.08);
+    overflow: hidden;
+}
+
+.ponto-team-history__summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 20px;
+    cursor: pointer;
+}
+
+.ponto-team-history__summary::-webkit-details-marker {
+    display: none;
+}
+
+.ponto-team-history__summary-main {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.ponto-team-history__summary-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ponto-team-history__identity {
+    display: grid;
+    gap: 6px;
+}
+
+.ponto-team-history__identity strong {
+    color: #12233b;
+    font-size: 1rem;
+}
+
+.ponto-team-history__identity span {
+    color: #617287;
+    line-height: 1.5;
+}
+
+.ponto-team-history__status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.ponto-team-history__status--active {
+    background: rgba(23, 114, 69, 0.12);
+    color: #177245;
+}
+
+.ponto-team-history__status--inactive {
+    background: rgba(123, 47, 47, 0.12);
+    color: #7b2f2f;
+}
+
+.ponto-team-history__count {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(18, 52, 93, 0.08);
+    color: #12345d;
+    font-size: 0.82rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.ponto-team-history__chevron {
+    color: #12345d;
+    font-size: 1rem;
+    font-weight: 800;
+    transition: transform 0.2s ease;
+}
+
+.ponto-team-history__employee[open] .ponto-team-history__chevron {
+    transform: rotate(180deg);
+}
+
+.ponto-team-history__content {
+    display: grid;
+    gap: 18px;
+    padding: 0 20px 20px;
+    border-top: 1px solid rgba(18, 52, 93, 0.08);
+}
+
+.ponto-team-history__days {
+    display: grid;
+    gap: 16px;
+    padding-top: 18px;
+}
+
 .ponto-records {
     display: grid;
     gap: 12px;
@@ -294,7 +409,7 @@
     gap: 16px;
     padding: 16px 18px;
     border-radius: 18px;
-    background: #f8fbff;
+    background: #ffffff;
     border: 1px solid rgba(18, 52, 93, 0.08);
 }
 
@@ -375,8 +490,17 @@
     }
 
     .ponto-record,
-    .ponto-history__day-header {
+    .ponto-history__day-header,
+    .ponto-team-history__summary-main {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .ponto-team-history__summary {
+        align-items: flex-start;
+    }
+
+    .ponto-team-history__summary-meta {
+        width: 100%;
     }
 }

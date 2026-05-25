@@ -1,5 +1,6 @@
 export type RequestType = "ferias" | "abono_falta" | "outro";
 export type RequestStatus = "pendente" | "aprovada" | "rejeitada";
+export type RequestReviewStatusInput = "aprovado" | "rejeitado";
 
 export type SupervisorOption = {
     id: number;
@@ -21,6 +22,13 @@ export type RequestHistoryItem = {
     status: RequestStatus;
     statusLabel: string;
     createdAtLabel: string;
+};
+
+export type SupervisorRequestItem = RequestHistoryItem & {
+    requesterId: number;
+    requesterName: string;
+    requesterEmail: string;
+    updatedAtLabel: string;
 };
 
 export type CreateRequestPayload = {

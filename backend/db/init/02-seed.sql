@@ -1,6 +1,6 @@
 INSERT INTO users (name, email, password, cpf, number, birth, role, is_active)
 VALUES ('Pedro Admin', 'pedro.admin@example.com', 'pedro123', '12345678900', '48999990001', '1995-05-17', 'admin', TRUE),
-       ('Ana Souza', 'ana.souza@example.com', 'ana123', '12345678901', '48999990002', '1998-03-12', 'employee', TRUE),
+       ('Ana Admin', 'ana.admin@example.com', 'ana123', '12345678901', '48999990002', '1998-03-12', 'admin', TRUE),
        ('Bruno Lima', 'bruno.lima@example.com', 'bruno123', '12345678902', '48999990003', '1997-07-25', 'employee', TRUE),
        ('Carla Mendes', 'carla.mendes@example.com', 'carla123', '12345678903', '48999990004', '1999-11-02', 'employee', TRUE),
        ('Daniel Rocha', 'daniel.rocha@example.com', 'daniel123', '12345678904', '48999990005', '1996-09-18', 'employee', TRUE),
