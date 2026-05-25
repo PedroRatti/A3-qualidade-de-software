@@ -3,12 +3,19 @@ import { apiRequest } from "./apiClient";
 import type {
     CreateRequestPayload,
     RequestHistoryItem,
+    RequestReviewStatusInput,
     SupervisorOption,
+    SupervisorRequestItem,
 } from "../types/request.types";
 
 type CreateRequestResponse = {
     message: string;
     request: RequestHistoryItem;
+};
+
+type ReviewRequestResponse = {
+    message: string;
+    request: SupervisorRequestItem;
 };
 
 function toErrorMessage(error: unknown, fallback: string) {
@@ -25,15 +32,22 @@ function toErrorMessage(error: unknown, fallback: string) {
 
 export function useRequests() {
     const [history, setHistory] = useState<RequestHistoryItem[]>([]);
+    const [assignedRequests, setAssignedRequests] = useState<SupervisorRequestItem[]>([]);
     const [supervisors, setSupervisors] = useState<SupervisorOption[]>([]);
     const [loadingHistory, setLoadingHistory] = useState(false);
+    const [loadingAssignedRequests, setLoadingAssignedRequests] = useState(false);
     const [loadingSupervisors, setLoadingSupervisors] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [reviewingRequestId, setReviewingRequestId] = useState<number | null>(null);
+    const [historyLoaded, setHistoryLoaded] = useState(false);
+    const [assignedRequestsLoaded, setAssignedRequestsLoaded] = useState(false);
     const [historyError, setHistoryError] = useState("");
+    const [assignedRequestsError, setAssignedRequestsError] = useState("");
     const [submitError, setSubmitError] = useState("");
 
     const clearErrors = () => {
         setHistoryError("");
+        setAssignedRequestsError("");
         setSubmitError("");
     };
 
@@ -77,6 +91,7 @@ export function useRequests() {
             });
 
             setHistory((current) => [response.request, ...current]);
+            setHistoryLoaded(true);
 
             return response.request;
         } catch (requestError) {
@@ -86,7 +101,9 @@ export function useRequests() {
         } finally {
             setSubmitting(false);
         }
-    };const loadHistory = async () => {
+    };
+
+    const loadHistory = async () => {
         try {
             setLoadingHistory(true);
             setHistoryError("");
@@ -97,6 +114,7 @@ export function useRequests() {
             });
 
             setHistory(response);
+            setHistoryLoaded(true);
         } catch (requestError) {
             setHistoryError(toErrorMessage(requestError, "Erro ao carregar o histórico."));
         } finally {
@@ -104,17 +122,80 @@ export function useRequests() {
         }
     };
 
+    const loadAssignedRequests = async () => {
+        try {
+            setLoadingAssignedRequests(true);
+            setAssignedRequestsError("");
+
+            const response = await apiRequest<SupervisorRequestItem[]>("/solicitacoes/assigned", {
+                method: "GET",
+                auth: true,
+            });
+
+            setAssignedRequests(response);
+            setAssignedRequestsLoaded(true);
+        } catch (requestError) {
+            setAssignedRequestsError(
+                toErrorMessage(requestError, "Erro ao carregar solicitações do supervisor.")
+            );
+        } finally {
+            setLoadingAssignedRequests(false);
+        }
+    };
+
+    const reviewRequest = async (
+        requestId: number,
+        status: RequestReviewStatusInput
+    ) => {
+        try {
+            setReviewingRequestId(requestId);
+            setAssignedRequestsError("");
+
+            const response = await apiRequest<ReviewRequestResponse>(
+                `/solicitacoes/${requestId}/status`,
+                {
+                    method: "PATCH",
+                    auth: true,
+                    body: { status },
+                }
+            );
+
+            setAssignedRequests((current) =>
+                current.map((item) => (item.id === requestId ? response.request : item))
+            );
+
+            return response.request;
+        } catch (requestError) {
+            const message = toErrorMessage(
+                requestError,
+                "Erro ao atualizar a solicitação."
+            );
+            setAssignedRequestsError(message);
+            throw requestError;
+        } finally {
+            setReviewingRequestId(null);
+        }
+    };
+
     return {
         history,
+        assignedRequests,
         supervisors,
         loadingHistory,
+        loadingAssignedRequests,
         loadingSupervisors,
         submitting,
+        reviewingRequestId,
+        historyLoaded,
+        assignedRequestsLoaded,
         historyError,
+        assignedRequestsError,
         submitError,
         clearErrors,
         loadSupervisors,
         submitRequest,
         loadHistory,
+        loadAssignedRequests,
+        reviewRequest,
     };
 }

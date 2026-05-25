@@ -1,4 +1,10 @@
-import type { RequestRecord, RequestStatus, RequestType } from "../../useCases/solicitacoes/contracts/request.types";
+import type {
+    RequestRecord,
+    RequestStatus,
+    RequestType,
+    ReviewRequestStatus,
+    SupervisorRequestRecord,
+} from "../../useCases/solicitacoes/contracts/request.types";
 
 export type RequestHistoryItem = {
     id: number;
@@ -16,8 +22,15 @@ export type RequestHistoryItem = {
     createdAtLabel: string;
 };
 
+export type SupervisorRequestItem = RequestHistoryItem & {
+    requesterId: number;
+    requesterName: string;
+    requesterEmail: string;
+    updatedAtLabel: string;
+};
+
 const typeLabels: Record<RequestType, string> = {
-    ferias: "Ferias",
+    ferias: "Férias",
     abono_falta: "Abono de falta",
     outro: "Outro",
 };
@@ -31,6 +44,18 @@ const statusLabels: Record<RequestStatus, string> = {
 export function parseRequestType(value: string): RequestType | null {
     if (value === "ferias" || value === "abono_falta" || value === "outro") {
         return value;
+    }
+
+    return null;
+}
+
+export function parseReviewRequestStatus(value: string): ReviewRequestStatus | null {
+    if (value === "aprovada" || value === "aprovado") {
+        return "aprovada";
+    }
+
+    if (value === "rejeitada" || value === "rejeitado") {
+        return "rejeitada";
     }
 
     return null;
@@ -108,5 +133,17 @@ export function formatRequest(record: RequestRecord): RequestHistoryItem {
         status: record.status,
         statusLabel: statusLabels[record.status],
         createdAtLabel: formatDateTime(record.created_at),
+    };
+}
+
+export function formatSupervisorRequest(record: SupervisorRequestRecord): SupervisorRequestItem {
+    const base = formatRequest(record);
+
+    return {
+        ...base,
+        requesterId: record.user_id,
+        requesterName: record.requester_name,
+        requesterEmail: record.requester_email,
+        updatedAtLabel: formatDateTime(record.updated_at),
     };
 }

@@ -31,7 +31,7 @@ function makeHistoryItem(overrides: Partial<{
 }> = {}) {
     return {
         id: 100,
-        type: "férias" as const,
+        type: "ferias" as const,
         typeLabel: "Férias",
         startDate: "2026-06-10",
         endDate: "2026-06-20",
@@ -43,6 +43,47 @@ function makeHistoryItem(overrides: Partial<{
         status: "pendente" as const,
         statusLabel: "Pendente",
         createdAtLabel: "12/05/2026, 10:00",
+        ...overrides,
+    };
+}
+
+function makeAssignedRequest(overrides: Partial<{
+    id: number;
+    type: "ferias" | "abono_falta" | "outro";
+    typeLabel: string;
+    startDate: string;
+    endDate: string;
+    periodLabel: string;
+    reason: string;
+    requesterId: number;
+    requesterName: string;
+    requesterEmail: string;
+    supervisorId: number;
+    supervisorName: string;
+    attachmentUrl: string | null;
+    status: "pendente" | "aprovada" | "rejeitada";
+    statusLabel: string;
+    createdAtLabel: string;
+    updatedAtLabel: string;
+}> = {}) {
+    return {
+        id: 200,
+        type: "ferias" as const,
+        typeLabel: "Férias",
+        startDate: "2026-05-25",
+        endDate: "2026-05-26",
+        periodLabel: "25/05/2026 ate 26/05/2026",
+        reason: "Viagem pessoal",
+        requesterId: 7,
+        requesterName: "Ana Souza",
+        requesterEmail: "ana.souza@example.com",
+        supervisorId: 1,
+        supervisorName: "Pedro Admin",
+        attachmentUrl: null,
+        status: "pendente" as const,
+        statusLabel: "Pendente",
+        createdAtLabel: "25/05/2026, 18:39",
+        updatedAtLabel: "25/05/2026, 18:39",
         ...overrides,
     };
 }
@@ -76,9 +117,7 @@ test("deve enviar solicitação de férias com sucesso", async ({ page }) => {
         await route.fulfill({
             status: 200,
             contentType: "application/json",
-            body: JSON.stringify([
-                makeHistoryItem(),
-            ]),
+            body: JSON.stringify([makeHistoryItem()]),
         });
     });
 
@@ -100,14 +139,22 @@ test("deve enviar solicitação de férias com sucesso", async ({ page }) => {
 
     await page.goto("/requests");
 
-    await expect(page.getByRole("heading", { name: "Solicitações" })).toBeVisible();
+    await expect(
+        page.getByRole("heading", { name: "Solicitações", level: 1 })
+    ).toBeVisible();
+    await expect(
+        page.getByRole("button", { name: "Gerenciar Solicitações" })
+    ).toHaveCount(0);
+
     await page.selectOption('select:has(option[value="1"])', "1");
     await page.locator('input[type="date"]').nth(0).fill("2026-06-10");
     await page.locator('input[type="date"]').nth(1).fill("2026-06-20");
     await page.locator("textarea").fill("Férias programadas");
     await page.getByRole("button", { name: "Enviar solicitação" }).click();
 
-    await expect(page.getByRole("heading", { name: "Histórico de solicitações" })).toBeVisible();
+    await expect(
+        page.getByRole("heading", { name: "Histórico de solicitações" })
+    ).toBeVisible();
     await expect(page.getByText("Pedro Admin")).toBeVisible();
     await expect(page.getByText("Férias programadas")).toBeVisible();
     await expect(page.getByText("Pendente")).toBeVisible();
@@ -147,7 +194,9 @@ test("deve enviar solicitação de abono com anexo", async ({ page }) => {
             return;
         }
 
-        expect(route.request().headers()["content-type"]).toContain("multipart/form-data");
+        expect(route.request().headers()["content-type"]).toContain(
+            "multipart/form-data"
+        );
 
         await route.fulfill({
             status: 201,
@@ -186,7 +235,9 @@ test("deve enviar solicitação de abono com anexo", async ({ page }) => {
 
     await expect(historyItem).toContainText("Abono de falta");
     await expect(historyItem).toContainText("Consulta médica");
-    await expect(historyItem.getByRole("link", { name: "Ver anexo" })).toBeVisible();
+    await expect(
+        historyItem.getByRole("link", { name: "Ver anexo" })
+    ).toBeVisible();
 });
 
 test("deve carregar histórico e exibir supervisor e anexo", async ({ page }) => {
@@ -219,7 +270,9 @@ test("deve carregar histórico e exibir supervisor e anexo", async ({ page }) =>
     await page.goto("/requests");
     await page.getByRole("button", { name: "Histórico" }).click();
 
-    await expect(page.getByRole("heading", { name: "Histórico de solicitações" })).toBeVisible();
+    await expect(
+        page.getByRole("heading", { name: "Histórico de solicitações" })
+    ).toBeVisible();
     await expect(page.getByText("Maria Admin")).toBeVisible();
     await expect(page.getByText("Consulta médica")).toBeVisible();
     await expect(page.getByRole("link", { name: "Ver anexo" })).toHaveAttribute(
@@ -250,10 +303,142 @@ test("deve limpar erro do histórico ao trocar de aba", async ({ page }) => {
     await page.goto("/requests");
     await page.getByRole("button", { name: "Histórico" }).click();
 
-    await expect(page.getByText("Ocorreu um erro ao buscar o histórico.")).toBeVisible();
+    await expect(
+        page.getByText("Ocorreu um erro ao buscar o histórico.")
+    ).toBeVisible();
 
     await page.getByRole("button", { name: "Nova solicitação" }).click();
 
-    await expect(page.getByText("Ocorreu um erro ao buscar o histórico.")).not.toBeVisible();
-    await expect(page.getByRole("heading", { name: "Abrir nova solicitação" })).toBeVisible();
+    await expect(
+        page.getByText("Ocorreu um erro ao buscar o histórico.")
+    ).not.toBeVisible();
+    await expect(
+        page.getByRole("heading", { name: "Abrir nova solicitação" })
+    ).toBeVisible();
+});
+
+test("admin deve visualizar e revisar solicitações na aba de gerenciamento", async ({
+    page,
+}) => {
+    await page.addInitScript(() => {
+        localStorage.setItem("token", "fake-jwt-token");
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                id: 1,
+                name: "Pedro Admin",
+                email: "pedro.admin@example.com",
+                role: "admin",
+                is_active: true,
+            })
+        );
+    });
+
+    await page.route("**/solicitacoes/supervisors", async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify(supervisorMock),
+        });
+    });
+
+    await page.route("**/solicitacoes/assigned", async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify([makeAssignedRequest()]),
+        });
+    });
+
+    await page.route("**/solicitacoes/200/status", async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                message: "Solicitação atualizada com sucesso.",
+                request: makeAssignedRequest({
+                    status: "aprovada",
+                    statusLabel: "Aprovada",
+                    updatedAtLabel: "25/05/2026, 19:15",
+                }),
+            }),
+        });
+    });
+
+    await page.goto("/requests");
+    await page.getByRole("button", { name: "Gerenciar Solicitações" }).click();
+
+    await expect(
+        page.getByRole("heading", { name: "Gerenciar Solicitações" })
+    ).toBeVisible();
+    await expect(page.getByText("Ana Souza")).toBeVisible();
+    await expect(page.getByText("Viagem pessoal")).toBeVisible();
+
+    await page.getByRole("button", { name: "Aprovar" }).click();
+
+    await expect(page.getByText("Aprovada")).toBeVisible();
+    await expect(page.getByText("Solicitação já analisada.")).toBeVisible();
+});
+
+test("admin deve conseguir rejeitar uma solicitação atribuída", async ({ page }) => {
+    await page.addInitScript(() => {
+        localStorage.setItem("token", "fake-jwt-token");
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                id: 1,
+                name: "Pedro Admin",
+                email: "pedro.admin@example.com",
+                role: "admin",
+                is_active: true,
+            })
+        );
+    });
+
+    await page.route("**/solicitacoes/supervisors", async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify(supervisorMock),
+        });
+    });
+
+    await page.route("**/solicitacoes/assigned", async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify([
+                makeAssignedRequest({
+                    id: 201,
+                    requesterName: "Bruno Lima",
+                    requesterEmail: "bruno.lima@example.com",
+                }),
+            ]),
+        });
+    });
+
+    await page.route("**/solicitacoes/201/status", async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                message: "Solicitação atualizada com sucesso.",
+                request: makeAssignedRequest({
+                    id: 201,
+                    requesterName: "Bruno Lima",
+                    requesterEmail: "bruno.lima@example.com",
+                    status: "rejeitada",
+                    statusLabel: "Rejeitada",
+                    updatedAtLabel: "25/05/2026, 19:20",
+                }),
+            }),
+        });
+    });
+
+    await page.goto("/requests");
+    await page.getByRole("button", { name: "Gerenciar Solicitações" }).click();
+    await page.getByRole("button", { name: "Rejeitar" }).click();
+
+    await expect(page.getByText("Rejeitada")).toBeVisible();
+    await expect(page.getByText("Solicitação já analisada.")).toBeVisible();
 });

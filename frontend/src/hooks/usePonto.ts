@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import type { PointActionKey, PointHistoryDay, PointSummary } from "../types/ponto.types";
+import type {
+    PointActionKey,
+    PointHistoryDay,
+    PointSummary,
+    TeamPointHistoryEmployee,
+} from "../types/ponto.types";
 import { apiRequest } from "./apiClient";
 
 type RegisterPointResponse = {
@@ -23,14 +28,18 @@ export function usePonto() {
     const [summary, setSummary] = useState<PointSummary | null>(null);
     const [loading, setLoading] = useState(true);
     const [submittingAction, setSubmittingAction] = useState<PointActionKey | null>(null);
-    const [error, setError] = useState("");
+    const [summaryError, setSummaryError] = useState("");
     const [history, setHistory] = useState<PointHistoryDay[]>([]);
     const [historyLoading, setHistoryLoading] = useState(false);
+    const [historyError, setHistoryError] = useState("");
+    const [teamHistory, setTeamHistory] = useState<TeamPointHistoryEmployee[]>([]);
+    const [teamHistoryLoading, setTeamHistoryLoading] = useState(false);
+    const [teamHistoryError, setTeamHistoryError] = useState("");
 
     const refreshSummary = async () => {
         try {
             setLoading(true);
-            setError("");
+            setSummaryError("");
 
             const nextSummary = await apiRequest<PointSummary>("/ponto/today", {
                 method: "GET",
@@ -39,7 +48,7 @@ export function usePonto() {
 
             setSummary(nextSummary);
         } catch (requestError) {
-            setError(toErrorMessage(requestError, "Erro ao carregar os dados do ponto."));
+            setSummaryError(toErrorMessage(requestError, "Erro ao carregar os dados do ponto."));
         } finally {
             setLoading(false);
         }
@@ -48,7 +57,7 @@ export function usePonto() {
     const registerAction = async (action: PointActionKey) => {
         try {
             setSubmittingAction(action);
-            setError("");
+            setSummaryError("");
 
             const response = await apiRequest<RegisterPointResponse>("/ponto/register", {
                 method: "POST",
@@ -59,7 +68,7 @@ export function usePonto() {
             setSummary(response.summary);
         } catch (requestError) {
             const message = toErrorMessage(requestError, "Erro ao registrar o ponto.");
-            setError(message);
+            setSummaryError(message);
             throw requestError;
         } finally {
             setSubmittingAction(null);
@@ -69,7 +78,7 @@ export function usePonto() {
     const loadHistory = async () => {
         try {
             setHistoryLoading(true);
-            setError("");
+            setHistoryError("");
 
             const nextHistory = await apiRequest<PointHistoryDay[]>("/ponto/history", {
                 method: "GET",
@@ -78,9 +87,32 @@ export function usePonto() {
 
             setHistory(nextHistory);
         } catch (requestError) {
-            setError(toErrorMessage(requestError, "Erro ao carregar o histórico de ponto."));
+            setHistoryError(toErrorMessage(requestError, "Erro ao carregar o histórico de ponto."));
         } finally {
             setHistoryLoading(false);
+        }
+    };
+
+    const loadTeamHistory = async (daysBack = 30) => {
+        try {
+            setTeamHistoryLoading(true);
+            setTeamHistoryError("");
+
+            const nextTeamHistory = await apiRequest<TeamPointHistoryEmployee[]>(
+                `/ponto/team/history?daysBack=${daysBack}`,
+                {
+                    method: "GET",
+                    auth: true,
+                }
+            );
+
+            setTeamHistory(nextTeamHistory);
+        } catch (requestError) {
+            setTeamHistoryError(
+                toErrorMessage(requestError, "Erro ao carregar o histórico da equipe.")
+            );
+        } finally {
+            setTeamHistoryLoading(false);
         }
     };
 
@@ -92,11 +124,16 @@ export function usePonto() {
         summary,
         loading,
         submittingAction,
-        error,
+        summaryError,
         refreshSummary,
         registerAction,
         history,
         historyLoading,
+        historyError,
         loadHistory,
+        teamHistory,
+        teamHistoryLoading,
+        teamHistoryError,
+        loadTeamHistory,
     };
 }

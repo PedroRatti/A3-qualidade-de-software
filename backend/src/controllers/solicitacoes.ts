@@ -4,6 +4,8 @@ import { UsersRepository } from "../repositories/user";
 import { CreateRequestUseCase } from "../useCases/solicitacoes/createRequest";
 import { GetRequestHistoryUseCase } from "../useCases/solicitacoes/getRequestHistory";
 import { GetAvailableSupervisorsUseCase } from "../useCases/solicitacoes/getAvailableSupervisors";
+import { GetSupervisorRequestsUseCase } from "../useCases/solicitacoes/getSupervisorRequests";
+import { ReviewRequestUseCase } from "../useCases/solicitacoes/reviewRequest";
 
 export class SolicitacoesController {
     async create(req: Request, res: Response) {
@@ -20,7 +22,7 @@ export class SolicitacoesController {
             const requestsRepository = new RequestsRepository();
             const useCase = new CreateRequestUseCase(usersRepository, requestsRepository);
 
-            const request = await useCase.execute({
+            const createdRequest = await useCase.execute({
                 userId,
                 supervisorId: Number(supervisorId),
                 type,
@@ -32,7 +34,7 @@ export class SolicitacoesController {
 
             return res.status(201).json({
                 message: "Solicitação enviada com sucesso.",
-                request,
+                request: createdRequest,
             });
         } catch (error) {
             return handleRequestError(error, res, "Erro interno ao criar a solicitação.");
@@ -56,6 +58,55 @@ export class SolicitacoesController {
             return res.status(200).json(history);
         } catch (error) {
             return handleRequestError(error, res, "Erro interno ao buscar o histórico de solicitações.");
+        }
+    }
+
+    async getAssigned(req: Request, res: Response) {
+        try {
+            const userId = Number(req.user?.id);
+
+            if (!Number.isInteger(userId)) {
+                return res.status(401).json({ message: "Contexto de usuário inválido." });
+            }
+
+            const usersRepository = new UsersRepository();
+            const requestsRepository = new RequestsRepository();
+            const useCase = new GetSupervisorRequestsUseCase(usersRepository, requestsRepository);
+
+            const requests = await useCase.execute({ userId });
+
+            return res.status(200).json(requests);
+        } catch (error) {
+            return handleRequestError(error, res, "Erro interno ao buscar solicitações do supervisor.");
+        }
+    }
+
+    async review(req: Request, res: Response) {
+        try {
+            const userId = Number(req.user?.id);
+            const requestId = Number(req.params.requestId);
+            const { status } = req.body;
+
+            if (!Number.isInteger(userId)) {
+                return res.status(401).json({ message: "Contexto de usuário inválido." });
+            }
+
+            const usersRepository = new UsersRepository();
+            const requestsRepository = new RequestsRepository();
+            const useCase = new ReviewRequestUseCase(usersRepository, requestsRepository);
+
+            const updatedRequest = await useCase.execute({
+                userId,
+                requestId,
+                status,
+            });
+
+            return res.status(200).json({
+                message: "Solicitação atualizada com sucesso.",
+                request: updatedRequest,
+            });
+        } catch (error) {
+            return handleRequestError(error, res, "Erro interno ao atualizar a solicitação.");
         }
     }
 
@@ -85,21 +136,38 @@ function handleRequestError(error: unknown, res: Response, fallbackMessage: stri
             "Supervisor inválido.",
             "Supervisor inativo.",
             "Período inválido.",
+            "Periodo inválido.",
             "A data inicial não pode ser maior que a data final.",
             "É necessário informar o motivo da solicitação.",
             "É necessário anexar o atestado para abono de falta.",
+            "Solicitação inválida.",
+            "É necessário informar o status da solicitação.",
+            "Status de solicitação inválido.",
         ];
 
         if (badRequestMessages.includes(error.message)) {
             return res.status(400).json({ message: error.message });
         }
 
-        if (error.message === "Usuario inativo.") {
+        if (
+            error.message === "Usuário inativo." ||
+            error.message === "Usuario inativo." ||
+            error.message === "Acesso negado." ||
+            error.message === "Solicitação não pertence ao supervisor informado."
+        ) {
             return res.status(403).json({ message: error.message });
         }
 
-        if (error.message === "Usuario nao encontrado.") {
+        if (
+            error.message === "Usuário não encontrado." ||
+            error.message === "Usuario nao encontrado." ||
+            error.message === "Solicitação não encontrada."
+        ) {
             return res.status(404).json({ message: error.message });
+        }
+
+        if (error.message === "Solicitação já analisada.") {
+            return res.status(409).json({ message: error.message });
         }
     }
 

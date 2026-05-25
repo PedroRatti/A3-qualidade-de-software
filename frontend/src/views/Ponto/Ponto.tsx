@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { PageTemplate } from "../../components/PageTemplate/PageTemplate.tsx";
 import { usePonto } from "../../hooks/usePonto.ts";
+import { isAdmin } from "../../utils/auth";
 import type { PointActionKey } from "../../types/ponto.types.ts";
 import { Actions } from "./Actions/Actions.tsx";
 import { createPointPreview } from "./Constants/Constants.ts";
@@ -9,19 +10,30 @@ import "./Ponto.css";
 import { Records } from "./Records/Records.tsx";
 import { PontoSummaryCards } from "./Summary/PontoSummary.tsx";
 import { PointHistory } from "./History/PointHistory.tsx";
+import { TeamPointHistory } from "./TeamHistory/TeamPointHistory.tsx";
+import { PontoTabs } from "./Tabs/PontoTabs.tsx";
+
+type PontoTab = "registro" | "historico" | "colaboradores";
 
 export function Ponto() {
-    const [activeTab, setActiveTab] = useState<"registro" | "historico">("registro");
+    const [activeTab, setActiveTab] = useState<PontoTab>("registro");
+    const admin = isAdmin();
+
     const {
         summary,
         loading,
         submittingAction,
-        error,
+        summaryError,
         refreshSummary,
         registerAction,
         history,
         historyLoading,
+        historyError,
         loadHistory,
+        teamHistory,
+        teamHistoryLoading,
+        teamHistoryError,
+        loadTeamHistory,
     } = usePonto();
 
     const pointData = summary ?? createPointPreview();
@@ -34,11 +46,19 @@ export function Ponto() {
         }
     };
 
-    const handleTabChange = async (tab: "registro" | "historico") => {
+    const handleTabChange = async (tab: PontoTab) => {
+        if (tab === "colaboradores" && !admin) {
+            return;
+        }
+
         setActiveTab(tab);
 
         if (tab === "historico" && history.length === 0) {
             await loadHistory();
+        }
+
+        if (tab === "colaboradores" && teamHistory.length === 0) {
+            await loadTeamHistory();
         }
     };
 
@@ -51,11 +71,11 @@ export function Ponto() {
                     loading={loading}
                 />
 
-                {error ? (
+                {summaryError ? (
                     <section className="ponto-feedback ponto-feedback--error">
                         <div>
                             <strong>Falha ao carregar ou registrar o ponto.</strong>
-                            <p>{error}</p>
+                            <p>{summaryError}</p>
                         </div>
                         <button
                             type="button"
@@ -67,23 +87,11 @@ export function Ponto() {
                     </section>
                 ) : null}
 
-                <section className="ponto-tabs">
-                    <button
-                        type="button"
-                        className={activeTab === "registro" ? "ponto-tabs__button ponto-tabs__button--active" : "ponto-tabs__button"}
-                        onClick={() => void handleTabChange("registro")}
-                    >
-                        Bater ponto
-                    </button>
-
-                    <button
-                        type="button"
-                        className={activeTab === "historico" ? "ponto-tabs__button ponto-tabs__button--active" : "ponto-tabs__button"}
-                        onClick={() => void handleTabChange("historico")}
-                    >
-                        Histórico
-                    </button>
-                </section>
+                <PontoTabs
+                    activeTab={activeTab}
+                    onChange={handleTabChange}
+                    isAdmin={admin}
+                />
 
                 {activeTab === "registro" ? (
                     <>
@@ -98,8 +106,18 @@ export function Ponto() {
 
                         <Records records={pointData.records} />
                     </>
+                ) : activeTab === "historico" ? (
+                    <PointHistory
+                        history={history}
+                        loading={historyLoading}
+                        error={historyError}
+                    />
                 ) : (
-                    <PointHistory history={history} loading={historyLoading} />
+                    <TeamPointHistory
+                        employees={teamHistory}
+                        loading={teamHistoryLoading}
+                        error={teamHistoryError}
+                    />
                 )}
             </section>
         </PageTemplate>

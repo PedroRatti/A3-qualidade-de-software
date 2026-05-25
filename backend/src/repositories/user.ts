@@ -18,6 +18,17 @@ export type SupervisorOption = {
     email: string;
 };
 
+export type CollaboratorDirectoryItem = {
+    id: number;
+    name: string;
+    email: string;
+    cpf: string;
+    number: string | null;
+    birth: string;
+    role: string;
+    is_active: boolean;
+};
+
 export class UsersRepository {
     async findByEmail(email: string): Promise<User | null> {
         const pool = getPool();
@@ -64,12 +75,34 @@ export class UsersRepository {
 
         const result = await pool.query<SupervisorOption>(
             `
-        SELECT id, name, email
-        FROM users
-        WHERE role = 'admin'
-          AND is_active = TRUE
-        ORDER BY name ASC
-        `
+            SELECT id, name, email
+            FROM users
+            WHERE role = 'admin'
+              AND is_active = TRUE
+            ORDER BY name ASC
+            `
+        );
+
+        return result.rows;
+    }
+
+    async findDirectoryEntries(): Promise<CollaboratorDirectoryItem[]> {
+        const pool = getPool();
+
+        const result = await pool.query<CollaboratorDirectoryItem>(
+            `
+            SELECT
+                id,
+                name,
+                email,
+                cpf,
+                number,
+                birth,
+                role,
+                is_active
+            FROM users
+            ORDER BY is_active DESC, name ASC
+            `
         );
 
         return result.rows;

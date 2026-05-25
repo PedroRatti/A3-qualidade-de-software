@@ -64,6 +64,10 @@
     gap: 10px;
 }
 
+.app-header__notifications {
+    position: relative;
+}
+
 .app-header__icon-button {
     width: 38px;
     height: 38px;
@@ -76,6 +80,7 @@
     color: #ffffff;
     cursor: pointer;
     transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    position: relative;
 }
 
 .app-header__icon-button:hover {
@@ -95,6 +100,97 @@
     opacity: 1;
 }
 
+.app-header__notification-badge {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #e5484d;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 0 0 2px var(--app-primary);
+}
+
+.app-header__notifications-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: min(360px, calc(100vw - 32px));
+    max-height: 420px;
+    overflow: auto;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid rgba(18, 52, 93, 0.08);
+    box-shadow: 0 20px 40px rgba(6, 17, 31, 0.18);
+    color: #12233b;
+}
+
+.app-header__notifications-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(18, 52, 93, 0.08);
+}
+
+.app-header__notifications-header strong {
+    font-size: 0.95rem;
+    letter-spacing: -0.02em;
+}
+
+.app-header__notifications-empty {
+    margin: 0;
+    padding: 18px;
+    color: #617287;
+    line-height: 1.6;
+}
+
+.app-header__notifications-list {
+    display: grid;
+    gap: 0;
+}
+
+.app-header__notification-item {
+    width: 100%;
+    box-sizing: border-box;
+    display: grid;
+    gap: 8px;
+    padding: 16px 18px;
+    border: none;
+    border-top: 1px solid rgba(18, 52, 93, 0.08);
+    background: #ffffff;
+    text-align: left;
+    cursor: pointer;
+    text-decoration: none;
+    font: inherit;
+}
+
+.app-header__notification-item:hover {
+    background: #f4f8fe;
+}
+
+.app-header__notification-item--unread {
+    background: #f8fbff;
+}
+
+.app-header__notification-item p {
+    margin: 0;
+    color: #12233b;
+    line-height: 1.5;
+    font: inherit;
+}
+
+.app-header__notification-item span {
+    color: #617287;
+    font-size: 0.8rem;
+}
+
 @media (max-width: 768px) {
     .app-header {
         padding: 0 14px;
@@ -105,5 +201,9 @@
         grid-column: 1 / -1;
         justify-self: start;
         display: none;
+    }
+
+    .app-header__notifications-panel {
+        right: -6px;
     }
 }

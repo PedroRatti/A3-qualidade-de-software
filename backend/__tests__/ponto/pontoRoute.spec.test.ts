@@ -5,11 +5,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const getTodayMock = vi.fn();
 const registerMock = vi.fn();
+const getHistoryMock = vi.fn();
+const getTeamHistoryMock = vi.fn();
 
 vi.mock("../../src/controllers/ponto", () => {
     class PontoController {
         getToday = getTodayMock;
         register = registerMock;
+        getHistory = getHistoryMock;
+        getTeamHistory = getTeamHistoryMock;
     }
 
     return { PontoController };
@@ -121,5 +125,61 @@ describe("Ponto routes", () => {
         expect(response.status).toBe(201);
         expect(registerMock).toHaveBeenCalledTimes(1);
         expect(response.body.message).toBe("Ponto registrado com sucesso.");
+    });
+
+    it("deve chamar o controller no GET /ponto/history com token válido", async () => {
+        getHistoryMock.mockImplementation(async (_req: unknown, res: any) => {
+            return res.status(200).json([]);
+        });
+
+        const { default: pontoRoutes } = await import("../../src/routes/ponto");
+        const token = jwt.sign(
+            {
+                sub: 1,
+                email: "ana.souza@example.com",
+                role: "employee",
+            },
+            process.env.AUTH_JWT_SECRET as string,
+            { expiresIn: "1d" }
+        );
+
+        const app = express();
+        app.use(express.json());
+        app.use("/ponto", pontoRoutes);
+
+        const response = await request(app)
+            .get("/ponto/history")
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(200);
+        expect(getHistoryMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("deve chamar o controller no GET /ponto/team/history com token válido", async () => {
+        getTeamHistoryMock.mockImplementation(async (_req: unknown, res: any) => {
+            return res.status(200).json([]);
+        });
+
+        const { default: pontoRoutes } = await import("../../src/routes/ponto");
+        const token = jwt.sign(
+            {
+                sub: 1,
+                email: "pedro.admin@example.com",
+                role: "admin",
+            },
+            process.env.AUTH_JWT_SECRET as string,
+            { expiresIn: "1d" }
+        );
+
+        const app = express();
+        app.use(express.json());
+        app.use("/ponto", pontoRoutes);
+
+        const response = await request(app)
+            .get("/ponto/team/history")
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(200);
+        expect(getTeamHistoryMock).toHaveBeenCalledTimes(1);
     });
 });
