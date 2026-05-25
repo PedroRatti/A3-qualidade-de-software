@@ -1,5 +1,6 @@
 export type RequestType = "ferias" | "abono_falta" | "outro";
 export type RequestStatus = "pendente" | "aprovada" | "rejeitada";
+export type ReviewRequestStatus = "aprovada" | "rejeitada";
 
 export type RequestRecord = {
     id: number;
@@ -14,4 +15,9 @@ export type RequestRecord = {
     status: RequestStatus;
     created_at: Date;
     updated_at: Date;
+};
+
+export type SupervisorRequestRecord = RequestRecord & {
+    requester_name: string;
+    requester_email: string;
 };

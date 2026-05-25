@@ -42,3 +42,11 @@ export type PointHistoryDay = {
     workedTime: string;
     records: PointRecord[];
 };
+
+export type TeamPointHistoryEmployee = {
+    userId: number;
+    employeeName: string;
+    employeeEmail: string;
+    isActive: boolean;
+    history: PointHistoryDay[];
+};

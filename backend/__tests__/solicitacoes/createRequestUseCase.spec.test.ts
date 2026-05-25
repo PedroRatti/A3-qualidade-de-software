@@ -95,7 +95,7 @@ describe("CreateRequestUseCase", () => {
             type: "ferias",
             startDate: "2026-06-10",
             endDate: "2026-06-20",
-            reason: "Ferias programadas",
+            reason: "Férias programadas",
         });
 
         expect(createMock).toHaveBeenCalledWith({
@@ -104,10 +104,10 @@ describe("CreateRequestUseCase", () => {
             type: "ferias",
             startDate: "2026-06-10",
             endDate: "2026-06-20",
-            reason: "Ferias programadas",
+            reason: "Férias programadas",
             attachmentUrl: null,
         });expect(result.type).toBe("ferias");
-        expect(result.typeLabel).toBe("Ferias");
+        expect(result.typeLabel).toBe("Férias");
         expect(result.supervisorId).toBe(1);
         expect(result.supervisorName).toBe("Pedro Admin");
         expect(result.status).toBe("pendente");
@@ -225,7 +225,7 @@ describe("CreateRequestUseCase", () => {
                 type: "ferias",
                 startDate: "2026-06-10",
                 endDate: "2026-06-20",
-                reason: "Ferias programadas",
+                reason: "Férias programadas",
             })
         ).rejects.toThrow("Supervisor inválido.");
     });
@@ -250,7 +250,7 @@ describe("CreateRequestUseCase", () => {
                 type: "ferias",
                 startDate: "2026-06-20",
                 endDate: "2026-06-10",
-                reason: "Ferias programadas",
+                reason: "Férias programadas",
             })
         ).rejects.toThrow("A data inicial não pode ser maior que a data final.");
     });

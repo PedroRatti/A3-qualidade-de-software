@@ -1,5 +1,10 @@
 import { getPool } from "../database/connection";
-import type { RequestRecord, RequestStatus, RequestType } from "../useCases/solicitacoes/contracts/request.types";
+import type {
+    RequestRecord,
+    RequestStatus,
+    RequestType,
+    SupervisorRequestRecord,
+} from "../useCases/solicitacoes/contracts/request.types";
 
 type RequestRow = {
     id: number;
@@ -14,6 +19,11 @@ type RequestRow = {
     status: RequestStatus;
     created_at: Date;
     updated_at: Date;
+};
+
+type SupervisorRequestRow = RequestRow & {
+    requester_name: string;
+    requester_email: string;
 };
 
 export class RequestsRepository {
@@ -70,5 +80,90 @@ export class RequestsRepository {
         );
 
         return result.rows;
+    }
+
+    async findHistoryBySupervisorId(supervisorId: number): Promise<SupervisorRequestRecord[]> {
+        const pool = getPool();
+
+        const result = await pool.query<SupervisorRequestRow>(
+            `
+            SELECT
+                r.*,
+                supervisor.name AS supervisor_name,
+                requester.name AS requester_name,
+                requester.email AS requester_email
+            FROM requests r
+            JOIN users supervisor ON supervisor.id = r.supervisor_id
+            JOIN users requester ON requester.id = r.user_id
+            WHERE r.supervisor_id = $1
+            ORDER BY
+                CASE WHEN r.status = 'pendente' THEN 0 ELSE 1 END,
+                r.created_at DESC,
+                r.id DESC
+            `,
+            [supervisorId]
+        );
+
+        return result.rows;
+    }
+
+    async findById(requestId: number): Promise<SupervisorRequestRecord | null> {
+        const pool = getPool();
+
+        const result = await pool.query<SupervisorRequestRow>(
+            `
+            SELECT
+                r.*,
+                supervisor.name AS supervisor_name,
+                requester.name AS requester_name,
+                requester.email AS requester_email
+            FROM requests r
+            JOIN users supervisor ON supervisor.id = r.supervisor_id
+            JOIN users requester ON requester.id = r.user_id
+            WHERE r.id = $1
+            LIMIT 1
+            `,
+            [requestId]
+        );
+
+        if (result.rowCount === 0) {
+            return null;
+        }
+
+        return result.rows[0];
+    }
+
+    async updateStatus(input: {
+        requestId: number;
+        status: RequestStatus;
+    }): Promise<SupervisorRequestRecord> {
+        const pool = getPool();
+
+        const result = await pool.query<SupervisorRequestRow>(
+            `
+            WITH updated AS (
+                UPDATE requests
+                SET status = $2,
+                    updated_at = NOW()
+                WHERE id = $1
+                RETURNING *
+            )
+            SELECT
+                u.*,
+                supervisor.name AS supervisor_name,
+                requester.name AS requester_name,
+                requester.email AS requester_email
+            FROM updated u
+            JOIN users supervisor ON supervisor.id = u.supervisor_id
+            JOIN users requester ON requester.id = u.user_id
+            `,
+            [input.requestId, input.status]
+        );
+
+        if (result.rowCount === 0) {
+            throw new Error("Solicitação não encontrada.");
+        }
+
+        return result.rows[0];
     }
 }
