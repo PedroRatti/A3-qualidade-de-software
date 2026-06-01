@@ -14,6 +14,24 @@ const supervisorMock = [
     },
 ];
 
+function createToken(overrides: Record<string, unknown> = {}) {
+    const header = Buffer.from(
+        JSON.stringify({ alg: "HS256", typ: "JWT" })
+    ).toString("base64url");
+
+    const payload = Buffer.from(
+        JSON.stringify({
+            sub: 7,
+            email: "ana.souza@example.com",
+            role: "employee",
+            exp: Math.floor(Date.now() / 1000) + 60 * 60,
+            ...overrides,
+        })
+    ).toString("base64url");
+
+    return `${header}.${payload}.signature`;
+}
+
 function makeHistoryItem(overrides: Partial<{
     id: number;
     type: "ferias" | "abono_falta" | "outro";
@@ -32,11 +50,11 @@ function makeHistoryItem(overrides: Partial<{
     return {
         id: 100,
         type: "ferias" as const,
-        typeLabel: "Férias",
+        typeLabel: "FÃ©rias",
         startDate: "2026-06-10",
         endDate: "2026-06-20",
         periodLabel: "10/06/2026 ate 20/06/2026",
-        reason: "Férias programadas",
+        reason: "FÃ©rias programadas",
         supervisorId: 1,
         supervisorName: "Pedro Admin",
         attachmentUrl: null,
@@ -89,22 +107,36 @@ function makeAssignedRequest(overrides: Partial<{
 }
 
 test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-        localStorage.setItem("token", "fake-jwt-token");
-        localStorage.setItem(
-            "user",
-            JSON.stringify({
-                id: 7,
-                name: "Ana Souza",
-                email: "ana.souza@example.com",
-                role: "employee",
-                is_active: true,
-            })
-        );
+    const employeeToken = createToken({
+        sub: 7,
+        email: "ana.souza@example.com",
+        role: "employee",
     });
+
+    await page.addInitScript(
+        ({ token }) => {
+            localStorage.setItem("token", token);
+            localStorage.setItem(
+                "user",
+                JSON.stringify({
+                    id: 7,
+                    name: "Ana Souza",
+                    email: "ana.souza@example.com",
+                    role: "employee",
+                    is_active: true,
+                })
+            );
+        },
+        { token: employeeToken }
+    );
 });
 
 test("deve enviar solicitação de férias com sucesso", async ({ page }) => {
+    const createdRequest = makeHistoryItem({
+        id: 100,
+        reason: "Ferias programadas",
+    });
+
     await page.route("**/solicitacoes/supervisors", async (route) => {
         await route.fulfill({
             status: 200,
@@ -117,7 +149,7 @@ test("deve enviar solicitação de férias com sucesso", async ({ page }) => {
         await route.fulfill({
             status: 200,
             contentType: "application/json",
-            body: JSON.stringify([makeHistoryItem()]),
+            body: JSON.stringify([createdRequest]),
         });
     });
 
@@ -132,7 +164,7 @@ test("deve enviar solicitação de férias com sucesso", async ({ page }) => {
             contentType: "application/json",
             body: JSON.stringify({
                 message: "Solicitação enviada com sucesso.",
-                request: makeHistoryItem(),
+                request: createdRequest,
             }),
         });
     });
@@ -149,15 +181,18 @@ test("deve enviar solicitação de férias com sucesso", async ({ page }) => {
     await page.selectOption('select:has(option[value="1"])', "1");
     await page.locator('input[type="date"]').nth(0).fill("2026-06-10");
     await page.locator('input[type="date"]').nth(1).fill("2026-06-20");
-    await page.locator("textarea").fill("Férias programadas");
+    await page.locator("textarea").fill(createdRequest.reason);
     await page.getByRole("button", { name: "Enviar solicitação" }).click();
 
     await expect(
         page.getByRole("heading", { name: "Histórico de solicitações" })
     ).toBeVisible();
-    await expect(page.getByText("Pedro Admin")).toBeVisible();
-    await expect(page.getByText("Férias programadas")).toBeVisible();
-    await expect(page.getByText("Pendente")).toBeVisible();
+
+    const historyItem = page.locator(".requests-history__item").first();
+
+    await expect(historyItem).toContainText("Pedro Admin");
+    await expect(historyItem).toContainText(createdRequest.reason);
+    await expect(historyItem).toContainText("Pendente");
 });
 
 test("deve enviar solicitação de abono com anexo", async ({ page }) => {
@@ -320,19 +355,28 @@ test("deve limpar erro do histórico ao trocar de aba", async ({ page }) => {
 test("admin deve visualizar e revisar solicitações na aba de gerenciamento", async ({
     page,
 }) => {
-    await page.addInitScript(() => {
-        localStorage.setItem("token", "fake-jwt-token");
-        localStorage.setItem(
-            "user",
-            JSON.stringify({
-                id: 1,
-                name: "Pedro Admin",
-                email: "pedro.admin@example.com",
-                role: "admin",
-                is_active: true,
-            })
-        );
+    const adminToken = createToken({
+        sub: 1,
+        email: "pedro.admin@example.com",
+        role: "admin",
     });
+
+    await page.addInitScript(
+        ({ token }) => {
+            localStorage.setItem("token", token);
+            localStorage.setItem(
+                "user",
+                JSON.stringify({
+                    id: 1,
+                    name: "Pedro Admin",
+                    email: "pedro.admin@example.com",
+                    role: "admin",
+                    is_active: true,
+                })
+            );
+        },
+        { token: adminToken }
+    );
 
     await page.route("**/solicitacoes/supervisors", async (route) => {
         await route.fulfill({
@@ -381,19 +425,28 @@ test("admin deve visualizar e revisar solicitações na aba de gerenciamento", a
 });
 
 test("admin deve conseguir rejeitar uma solicitação atribuída", async ({ page }) => {
-    await page.addInitScript(() => {
-        localStorage.setItem("token", "fake-jwt-token");
-        localStorage.setItem(
-            "user",
-            JSON.stringify({
-                id: 1,
-                name: "Pedro Admin",
-                email: "pedro.admin@example.com",
-                role: "admin",
-                is_active: true,
-            })
-        );
+    const adminToken = createToken({
+        sub: 1,
+        email: "pedro.admin@example.com",
+        role: "admin",
     });
+
+    await page.addInitScript(
+        ({ token }) => {
+            localStorage.setItem("token", token);
+            localStorage.setItem(
+                "user",
+                JSON.stringify({
+                    id: 1,
+                    name: "Pedro Admin",
+                    email: "pedro.admin@example.com",
+                    role: "admin",
+                    is_active: true,
+                })
+            );
+        },
+        { token: adminToken }
+    );
 
     await page.route("**/solicitacoes/supervisors", async (route) => {
         await route.fulfill({
