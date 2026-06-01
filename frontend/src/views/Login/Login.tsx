@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { LoginForm } from "../../components/LoginForm/LoginForm.tsx";
 import { ProjectLogo } from "../../components/ProjectLogo/ProjectLogo.tsx";
+import { hasValidSession } from "../../utils/auth";
 import "./Login.css";
 
 const metrics = [
@@ -10,9 +11,7 @@ const metrics = [
 ];
 
 export function Login() {
-    const token = localStorage.getItem("token");
-
-    if (token) {
+    if (hasValidSession()) {
         return <Navigate to="/overview" replace />;
     }
 
