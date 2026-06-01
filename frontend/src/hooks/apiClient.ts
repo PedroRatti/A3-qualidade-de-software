@@ -1,3 +1,5 @@
+import { getToken, redirectToLogin } from "../utils/auth";
+
 type ApiRequestOptions = Omit<RequestInit, "headers" | "body"> & {
     auth?: boolean;
     body?: unknown;
@@ -26,9 +28,10 @@ function buildHeaders(options: ApiRequestOptions): HeadersInit {
     }
 
     if (options.auth) {
-        const token = localStorage.getItem("token");
+        const token = getToken();
 
         if (!token) {
+            redirectToLogin();
             throw new Error("Sessão expirada. Faça login novamente.");
         }
 
@@ -53,6 +56,11 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
     const contentType = response.headers.get("content-type") ?? "";
     const isJson = contentType.includes("application/json");
     const data = isJson ? ((await response.json()) as T | ApiErrorResponse) : null;
+
+    if (options.auth && response.status === 401) {
+        redirectToLogin();
+        throw new Error("Sessão expirada. Faça login novamente.");
+    }
 
     if (!response.ok) {
         const message =

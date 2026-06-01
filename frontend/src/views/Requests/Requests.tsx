@@ -44,7 +44,7 @@ export function Requests() {
     const requestedTab = useMemo(
         () => resolveRequestsTab(new URLSearchParams(location.search).get("tab"), admin),
         [location.search, admin]
-        
+
     );
 
     const [activeTab, setActiveTab] = useState<RequestsTab>(requestedTab);

@@ -1,19 +1,14 @@
 import { Navigate } from "react-router-dom";
 import type { ReactNode } from "react";
-import { isAdmin } from "./auth";
+import { hasValidSession, isAdmin } from "./auth";
 
 type ProtectedRouteProps = {
     children: ReactNode;
     requireAdmin?: boolean;
 };
 
-export function ProtectedRoute({
-    children,
-    requireAdmin = false,
-}: ProtectedRouteProps) {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
+export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
+    if (!hasValidSession()) {
         return <Navigate to="/" replace />;
     }
 
