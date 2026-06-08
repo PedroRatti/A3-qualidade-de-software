@@ -1,190 +1,79 @@
 # EquipeHub
 
-O **EquipeHub** e uma aplicacao web para controle de jornada e solicitacoes internas de equipe. O projeto hoje ja possui autenticacao, modulo de ponto, historico de jornadas e fluxo de solicitacoes com anexo e envio para supervisor. As funcionalidades administrativas mais amplas ainda fazem parte do roadmap.
+EquipeHub é uma aplicação web para autenticação, controle de jornada, solicitações internas e consulta administrativa de equipe. O projeto está dividido em `frontend` e `backend`, usa PostgreSQL no backend e possui testes automatizados e workflows de CI.
 
-## Estado atual do projeto
+## O que existe hoje
 
-Atualmente o sistema possui:
+O código atual entrega:
 
-- login com autenticacao via JWT;
-- area protegida no frontend;
-- modulo de ponto com:
-  - resumo do dia;
-  - registro de entrada, pausa, retorno e saida;
-  - historico de ponto;
-- modulo de solicitacoes com:
-  - criacao de solicitacao;
-  - escolha de supervisor;
-  - upload de anexo;
-  - historico de solicitacoes;
-- banco PostgreSQL com seeds para usuarios, pontos e solicitacoes;
-- testes automatizados no backend e testes end-to-end no frontend.
+- login com JWT;
+- persistência de sessão no `localStorage`;
+- rotas protegidas no frontend;
+- área administrativa protegida por perfil;
+- módulo de ponto com resumo do dia;
+- registro de entrada, pausa, retorno e saída;
+- histórico individual de ponto;
+- histórico de ponto da equipe para administradores;
+- módulo de solicitações com supervisor, período, motivo e anexo;
+- histórico das solicitações do colaborador;
+- aprovação e rejeição de solicitações atribuídas ao supervisor;
+- diretório de colaboradores para administradores;
+- notificações por polling para mudanças no fluxo de solicitações.
 
-## Perfis de usuario
+## Perfis de acesso
 
 ### Colaborador
 
-Ja implementado:
-
-- realizar login;
-- bater ponto;
-- consultar o historico de ponto;
-- criar solicitacoes;
-- anexar documentos a uma solicitacao;
-- escolher qual supervisor recebera a solicitacao;
-- consultar o historico das solicitacoes feitas.
+- faz login;
+- registra ponto;
+- consulta o próprio histórico de ponto;
+- cria solicitações;
+- acompanha o histórico das próprias solicitações;
+- recebe notificações quando a solicitação sai de `pendente`.
 
 ### Administrador
 
-Parcialmente presente:
+- possui tudo que o colaborador possui;
+- consulta o histórico de ponto da equipe;
+- acessa o diretório de colaboradores;
+- revisa solicitações atribuídas ao próprio usuário;
+- recebe notificações quando novas solicitações pendentes são atribuídas.
 
-- pode existir como usuario com `role = admin`;
-- pode ser escolhido como supervisor no fluxo de solicitacoes.
-
-Ainda pendente de implementacao:
-
-- dashboard administrativo da equipe;
-- visualizacao consolidada dos colaboradores;
-- consulta do historico de outros funcionarios;
-- aprovacao e rejeicao de solicitacoes;
-- remanejamento de escala;
-- demais funcionalidades de gestao descritas no planejamento original do projeto.
-
-## Funcionalidades implementadas
-
-### 1. Autenticacao
-
-O login e feito por email e senha.
-
-Backend:
-
-- `POST /auth/login`
-
-Frontend:
-
-- tela de login;
-- armazenamento de token em `localStorage`;
-- protecao de rotas com `ProtectedRoute`.
-
-### 2. Controle de ponto
-
-Backend:
-
-- `GET /ponto/today`
-- `POST /ponto/register`
-- `GET /ponto/history`
-
-Frontend:
-
-- tela principal de ponto;
-- resumo da jornada atual;
-- botoes de acao conforme o estado do dia;
-- historico de registros.
-
-Fluxo suportado:
-
-- entrada;
-- inicio de pausa;
-- fim de pausa;
-- saida.
-
-### 3. Solicitacoes
-
-Backend:
-
-- `GET /solicitacoes/supervisors`
-- `POST /solicitacoes`
-- `GET /solicitacoes/history`
-
-Frontend:
-
-- tela de solicitacoes;
-- formulario de nova solicitacao;
-- tabs de nova solicitacao e historico;
-- upload de anexo;
-- selecao de supervisor.
-
-Tipos de solicitacao atualmente previstos:
-
-- `ferias`
-- `abono_falta`
-- `outro`
-
-## Arquitetura do projeto
+## Stack
 
 ### Frontend
 
-Stack:
-
-- React
+- React 19
 - TypeScript
 - Vite
 - React Router
-
-Organizacao principal:
-
-- `src/views/` para paginas e modulos visuais;
-- `src/components/` para componentes compartilhados;
-- `src/hooks/` para integracao com a API e estado;
-- `src/types/` para contratos do frontend;
-- `src/utils/` para protecao de rota e utilitarios.
+- React Icons
+- Playwright
 
 ### Backend
-
-Stack:
 
 - Node.js
 - Express
 - TypeScript
 - PostgreSQL
+- JWT
+- Multer
+- Vitest
+- Supertest
 
-Organizacao principal:
-
-- `src/routes/` para definicao das rotas;
-- `src/controllers/` para a camada HTTP;
-- `src/useCases/` para regras de negocio;
-- `src/repositories/` para acesso a dados;
-- `src/utils/` para formatacao e regras auxiliares;
-- `src/middleware/` para autenticacao JWT e upload.
-
-## Banco de dados
-
-Tabelas principais:
-
-- `users`
-- `time_entries`
-- `requests`
-
-A tabela `requests` hoje inclui:
-
-- usuario solicitante;
-- supervisor responsavel;
-- tipo;
-- periodo;
-- motivo;
-- caminho do anexo;
-- status.
-
-## Tecnologias utilizadas
-
-- **Frontend:** React, TypeScript, Vite, React Router
-- **Backend:** Node.js, Express, TypeScript
-- **Banco de dados:** PostgreSQL
-- **Upload de arquivos:** Multer
-- **Autenticacao:** JWT
-- **Testes backend:** Vitest, Supertest
-- **Testes frontend:** Playwright
-- **Containerizacao:** Docker Compose
-
-## Estrutura do repositorio
+## Estrutura do repositório
 
 ```text
 A3-qualidade-de-software/
+|-- .github/
+|   `-- workflows/
 |-- backend/
 |   |-- __tests__/
 |   |-- db/
 |   |   `-- init/
+|   |-- features/
 |   |-- src/
+|   |   |-- @types/
 |   |   |-- controllers/
 |   |   |-- database/
 |   |   |-- middleware/
@@ -192,28 +81,121 @@ A3-qualidade-de-software/
 |   |   |-- routes/
 |   |   |-- useCases/
 |   |   `-- utils/
-|   |-- uploads/
+|   |-- .env.example
 |   |-- docker-compose.yml
 |   `-- package.json
 |-- frontend/
 |   |-- __tests__/
+|   |-- features/
+|   |-- public/
 |   |-- src/
 |   |   |-- components/
+|   |   |-- contexts/
 |   |   |-- hooks/
 |   |   |-- types/
 |   |   |-- utils/
 |   |   `-- views/
+|   |-- .env.example
 |   `-- package.json
 `-- README.md
 ```
 
+## Fluxos implementados
+
+### Autenticação
+
+- endpoint `POST /auth/login`;
+- token JWT com expiração de `1d`;
+- token e usuário gravados em `localStorage`;
+- rotas protegidas com `ProtectedRoute`;
+- redirecionamento para `/overview` após login bem-sucedido.
+
+### Controle de ponto
+
+- resumo do dia em `GET /ponto/today`;
+- registro de ações em `POST /ponto/register`;
+- histórico individual em `GET /ponto/history`;
+- histórico da equipe em `GET /ponto/team/history`;
+- parâmetro `daysBack` aceito no histórico da equipe, com faixa válida de `1` a `90`;
+- máquina de estados da jornada:
+  - `clock-in` -> entrada
+  - `start-break` -> saída_almoco
+  - `end-break` -> entrada_almoco
+  - `clock-out` -> saída
+
+### Solicitações
+
+- lista de supervisores em `GET /solicitacoes/supervisors`;
+- criação em `POST /solicitacoes`;
+- histórico do colaborador em `GET /solicitacoes/history`;
+- caixa do supervisor em `GET /solicitacoes/assigned`;
+- revisão em `PATCH /solicitacoes/:requestId/status`;
+- tipos aceitos:
+  - `ferias`
+  - `abono_falta`
+  - `outro`
+- status usados no domínio:
+  - `pendente`
+  - `aprovada`
+  - `rejeitada`
+- `abono_falta` exige anexo.
+
+### Colaboradores
+
+- listagem administrativa em `GET /colaboradores`;
+- exibição de nome, email, CPF, telefone, nascimento, perfil e status.
+
+### Notificações
+
+- contexto global no frontend;
+- polling a cada `20` segundos em rotas autenticadas;
+- admin acompanha `solicitacoes/assigned`;
+- colaborador acompanha `solicitacoes/history`.
+
+## Rotas do frontend
+
+- `/` - login
+- `/overview` - módulo de ponto
+- `/requests` - solicitações
+- `/collaborators` - diretório administrativo
+
+## Banco de dados
+
+O schema inicial cria:
+
+- `users`
+- `time_entries`
+- `requests`
+
+Detalhes relevantes:
+
+- `users.role` distingue `admin` e `employee`;
+- `requests.type` é validado por `CHECK`;
+- `requests.status` é validado por `CHECK`;
+- `requests.supervisor_id` referencia um usuário da tabela `users`.
+
+## Seeds
+
+As seeds de `backend/db/init` criam:
+
+- 2 administradores ativos;
+- 9 colaboradores ativos;
+- histórico de ponto para dias úteis do último mês;
+- solicitações de exemplo.
+
+Credenciais úteis para ambiente local:
+
+- `pedro.admin@example.com` / `pedro123`
+- `ana.admin@example.com` / `ana123`
+- `bruno.lima@example.com` / `bruno123`
+
 ## Como executar
 
-### Pre-requisitos
+### Pré-requisitos
 
 - Node.js
 - npm
-- Docker Desktop ou outro ambiente com Docker
+- Docker ou Docker Desktop
 
 ### 1. Subir o banco
 
@@ -222,32 +204,55 @@ cd backend
 docker compose up -d
 ```
 
-### 2. Instalar dependencias do backend
+O `docker-compose.yml` sobe um PostgreSQL 16 com:
+
+- host: `localhost`
+- porta: `5432`
+- banco: `equipehub_db`
+- usuário: `postgres`
+- senha: `postgres`
+
+### 2. Configurar variáveis de ambiente
+
+Backend, arquivo `backend/.env`:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=equipehub_db
+DB_USER=postgres
+DB_PASSWORD=postgres
+AUTH_JWT_SECRET=dev-secret
+```
+
+Frontend, arquivo `frontend/.env`:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+Os arquivos `.env.example` podem ser usados como base.
+
+### 3. Instalar dependências
 
 ```bash
 cd backend
 npm install
 ```
 
-### 3. Rodar o backend
+```bash
+cd frontend
+npm install
+```
+
+### 4. Rodar o backend
 
 ```bash
 cd backend
 npm run dev
 ```
 
-API:
-
-```text
-http://localhost:3000
-```
-
-### 4. Instalar dependencias do frontend
-
-```bash
-cd frontend
-npm install
-```
+O backend escuta em `http://localhost:3000`.
 
 ### 5. Rodar o frontend
 
@@ -256,56 +261,47 @@ cd frontend
 npm run dev
 ```
 
-Aplicacao:
+O frontend sobe por padrão em `http://localhost:5173`.
 
-```text
-http://localhost:5173
-```
+## Uploads
 
-## Variaveis de ambiente
+- anexos são gravados em `backend/uploads/requests`;
+- a pasta é criada automaticamente;
+- o limite configurado no backend é de `5 MB`;
+- o formulário do frontend permite `.pdf`, `.png`, `.jpg` e `.jpeg`.
 
-### Frontend
-
-Arquivo `.env` esperado:
-
-```env
-VITE_API_URL=http://localhost:3000
-```
+## Scripts principais
 
 ### Backend
 
-O backend depende de variaveis para conexao com o banco e JWT. O projeto ja possui `.env.example` para referencia.
+- `npm run dev`
+- `npm run build`
+- `npm start`
+- `npm test`
+- `npm run test:watch`
 
-Variaveis usadas pelo codigo:
+### Frontend
 
-- `DB_HOST`
-- `DB_PORT`
-- `DB_NAME`
-- `DB_USER`
-- `DB_PASSWORD`
-- `AUTH_JWT_SECRET`
-
-## Seeds de desenvolvimento
-
-O projeto possui dados iniciais para facilitar testes locais:
-
-- usuarios de exemplo;
-- historico de ponto para os dias anteriores;
-- solicitacoes de exemplo.
-
-Exemplo de usuario admin seedado:
-
-- email: `pedro.admin@example.com`
-- senha: `pedro123`
-
-Exemplo de usuario colaborador:
-
-- email: `ana.souza@example.com`
-- senha: `ana123`
+- `npm run dev`
+- `npm run build`
+- `npm run test:e2e`
+- `npm run test:e2e:ui`
+- `npm run test:e2e:headed`
 
 ## Testes
 
 ### Backend
+
+Cobertura atual concentrada em:
+
+- use cases de autenticação;
+- use cases de ponto;
+- use cases de solicitações;
+- use case de colaboradores;
+- contratos de rotas com `supertest`;
+- presenter de solicitações.
+
+Execução:
 
 ```bash
 cd backend
@@ -314,26 +310,66 @@ npm test
 
 ### Frontend
 
+Cobertura atual concentrada em:
+
+- login;
+- fluxo de solicitações;
+- aba administrativa de solicitações;
+- tela de colaboradores;
+- proteção por perfil.
+
+Execução:
+
 ```bash
 cd frontend
 npm run test:e2e
 ```
 
-Observacao:
+Observações sobre a suíte E2E atual:
 
-- para os testes E2E do frontend, o backend precisa estar rodando na porta `3000`.
+- o Playwright sobe o frontend em `http://127.0.0.1:4173`;
+- os testes atuais mockam as principais chamadas HTTP com `page.route(...)`;
+- por isso, backend e banco não são obrigatórios para a suíte atual;
+- para uso manual da aplicação, `VITE_API_URL` continua apontando para `http://localhost:3000`.
 
-## Roadmap
+## BDD e especificações
 
-As proximas entregas devem focar principalmente no lado administrativo do sistema. O projeto ainda precisa implementar:
+O repositório mantém arquivos `.feature` em `backend/features` e `frontend/features` descrevendo os comportamentos esperados de:
 
-- aprovacao e rejeicao de solicitacoes por administradores;
-- tela administrativa para acompanhamento da equipe;
-- consulta do historico de ponto por colaborador;
-- visao consolidada de solicitacoes recebidas;
-- ajustes de permissao por perfil;
-- melhorias de usabilidade e cobertura de testes.
+- autenticação;
+- ponto;
+- solicitações;
+- colaboradores.
 
-## Resumo
+## CI
 
-O repositorio nao esta mais em estado apenas conceitual: hoje ele ja entrega uma base funcional para autenticacao, controle de ponto e solicitacoes internas. O principal bloco pendente e a camada administrativa completa, que continua prevista no escopo do projeto.
+Existem dois workflows em `.github/workflows`:
+
+- `backend-ci.yml`
+  - roda `npm ci`
+  - roda `npm run test`
+  - roda `npm run build`
+- `frontend-ci.yml`
+  - roda `npm ci`
+  - instala Chromium do Playwright
+  - executa apenas `__tests__/login.spec.test.ts`
+
+## Observações técnicas
+
+Pontos importantes observados no código atual:
+
+- o backend usa porta fixa `3000`;
+- as senhas ainda são comparadas em texto puro, sem hash;
+- o frontend depende de `localStorage` para token e perfil;
+- o diretório `dist/` do backend aparece no repositório como artefato gerado, mas a fonte de verdade continua em `backend/src`.
+
+## Estado atual do projeto
+
+O projeto já tem mais escopo implementado do que um README conceitual sugeriria. Hoje existe autenticação funcional, controle de ponto, históricos, fluxo de solicitações com revisão administrativa, diretório de colaboradores e notificações no frontend.
+
+As evoluções mais naturais daqui para frente são:
+
+- fortalecer segurança de autenticação;
+- ampliar filtros e relatórios administrativos;
+- aumentar a cobertura de testes além do fluxo de login no CI do frontend;
+- revisar detalhes de acabamento e padronização de textos e metadados do frontend.
